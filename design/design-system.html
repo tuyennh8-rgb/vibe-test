@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design System — Xem trước</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+  }
+  .container { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--gutter); }
+  h1, h2, h3, h4 { color: var(--color-ink); font-weight: var(--weight-bold); line-height: var(--leading-tight); margin: 0; }
+  p { margin: 0; }
+  code { font-family: var(--font-mono); font-size: .85em; background: var(--color-surface-alt); padding: 2px 6px; border-radius: var(--radius-sm); color: var(--color-ink); }
+
+  /* Khung trang xem trước */
+  .hero { background: var(--color-ink); color: var(--color-on-dark); padding: var(--space-20) 0 var(--space-16); }
+  .hero h1 { color: var(--color-on-dark); font-size: var(--text-5xl); letter-spacing: var(--tracking-tight); }
+  .hero h1 span { color: var(--color-primary); }
+  .hero p { margin-top: var(--space-4); max-width: 56ch; font-size: var(--text-lg); font-weight: var(--weight-light); color: #D6D3DA; }
+  nav.toc { position: sticky; top: 0; z-index: 5; background: rgba(255,255,255,.94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--color-border); }
+  nav.toc .container { display: flex; gap: var(--space-6); overflow-x: auto; padding-top: var(--space-4); padding-bottom: var(--space-4); }
+  nav.toc a { color: var(--color-text); text-decoration: none; font-weight: var(--weight-medium); white-space: nowrap; }
+  nav.toc a:hover { color: var(--color-primary); }
+
+  section { padding: var(--space-16) 0; border-bottom: 1px solid var(--color-border); }
+  section:last-of-type { border-bottom: 0; }
+  .section-title { font-size: var(--text-3xl); text-transform: uppercase; letter-spacing: var(--tracking-wide); }
+  .section-title::after { content: ""; display: block; width: 64px; height: 4px; background: var(--color-primary); margin-top: var(--space-4); border-radius: var(--radius-pill); }
+  .section-desc { margin-top: var(--space-4); max-width: 64ch; }
+  .group { margin-top: var(--space-10); }
+  .group > h3 { font-size: var(--text-md); margin-bottom: var(--space-4); text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--color-text); font-weight: var(--weight-semibold); }
+
+  /* Bảng màu */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: var(--space-4); }
+  .swatch { border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; background: var(--color-surface); }
+  .swatch .chip { height: 88px; }
+  .swatch .meta { padding: var(--space-3) var(--space-4); font-size: var(--text-sm); }
+  .swatch .meta b { display: block; color: var(--color-ink); font-weight: var(--weight-semibold); }
+  .swatch .meta span { font-family: var(--font-mono); font-size: var(--text-xs); }
+
+  /* Kiểu chữ */
+  .type-row { display: grid; grid-template-columns: 160px 1fr; gap: var(--space-6); align-items: baseline; padding: var(--space-4) 0; border-top: 1px solid var(--color-border); }
+  .type-row:first-child { border-top: 0; }
+  .type-row .label { font-size: var(--text-sm); font-family: var(--font-mono); }
+  @media (max-width: 640px) { .type-row { grid-template-columns: 1fr; gap: var(--space-1); } .hero h1 { font-size: var(--text-4xl); } }
+
+  /* Khoảng cách & bo góc */
+  .space-row { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-1) 0; font-size: var(--text-sm); }
+  .space-row .bar { height: 12px; background: var(--color-primary); border-radius: var(--radius-pill); }
+  .space-row .name { width: 90px; font-family: var(--font-mono); }
+  .radii { display: flex; flex-wrap: wrap; gap: var(--space-6); }
+  .radii .r { width: 112px; text-align: center; font-size: var(--text-sm); }
+  .radii .r div { height: 72px; background: var(--color-primary-soft); border: 2px solid var(--color-primary); margin-bottom: var(--space-2); }
+
+  /* ===== Thành phần ===== */
+  /* Nút: bo tròn hoàn toàn như site */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+    height: var(--control-height-md); padding: 0 var(--space-6);
+    border: var(--border-width-strong) solid transparent; border-radius: var(--radius-pill);
+    font: inherit; font-weight: var(--weight-semibold); font-size: var(--text-base);
+    cursor: pointer; text-decoration: none;
+    transition: background var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out),
+                border-color var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out), transform var(--duration-fast);
+  }
+  .btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--color-primary); color: var(--color-on-primary); box-shadow: var(--shadow-primary); }
+  .btn-primary:hover { background: var(--color-primary-hover); }
+  .btn-primary:active { background: var(--color-primary-active); }
+  .btn-dark { background: var(--color-ink); color: var(--color-on-dark); }
+  .btn-dark:hover { background: #000; }
+  .btn-outline { background: transparent; color: var(--color-primary); border-color: var(--color-primary); }
+  .btn-outline:hover { background: var(--color-primary); color: var(--color-on-primary); }
+  .btn-ghost { background: transparent; color: var(--color-ink); }
+  .btn-ghost:hover { background: var(--color-surface-alt); }
+  .btn-link { background: none; color: var(--color-primary); padding: 0 var(--space-1); height: auto; border-radius: var(--radius-sm); }
+  .btn-link:hover { text-decoration: underline; }
+  .btn-sm { height: var(--control-height-sm); padding: 0 var(--space-4); font-size: var(--text-sm); }
+  .btn-lg { height: var(--control-height-lg); padding: 0 var(--space-8); font-size: var(--text-md); }
+  .btn[disabled] { opacity: .45; cursor: not-allowed; box-shadow: none; pointer-events: none; }
+  .row { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; }
+  .on-dark { background: var(--color-ink); padding: var(--space-6); border-radius: var(--radius-lg); }
+  .on-dark .btn-outline { color: var(--color-on-dark); border-color: var(--color-on-dark); }
+  .on-dark .btn-outline:hover { background: var(--color-on-dark); color: var(--color-ink); }
+
+  /* Ô nhập: kiểu đường kẻ dưới như form của site */
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-8) var(--space-8); max-width: 820px; }
+  .field { display: flex; flex-direction: column; gap: var(--space-2); }
+  .field label { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--color-ink); }
+  .field .hint { font-size: var(--text-xs); color: var(--color-text); }
+  .input, .textarea, .select {
+    width: 100%; font: inherit; font-size: var(--text-sm); color: var(--color-ink);
+    background: transparent; border: 0; border-bottom: var(--border-width) solid var(--color-border-strong);
+    border-radius: var(--radius-none); padding: var(--space-3) 0; outline: none;
+    transition: border-color var(--duration-base);
+  }
+  .input::placeholder, .textarea::placeholder { color: var(--color-text-muted); opacity: 1; }
+  .input:hover, .textarea:hover, .select:hover { border-bottom-color: var(--color-text); }
+  .input:focus, .textarea:focus, .select:focus { border-bottom: var(--border-width-strong) solid var(--color-primary); padding-bottom: calc(var(--space-3) - 1px); }
+  .textarea { min-height: 96px; resize: vertical; }
+  .field.error .input { border-bottom-color: var(--color-danger); }
+  .field.error .hint { color: var(--color-danger); }
+  .input[disabled] { color: var(--color-text-muted); border-bottom-style: dashed; cursor: not-allowed; }
+  /* biến thể có viền, dùng khi cần nổi bật */
+  .input-boxed { border: var(--border-width) solid var(--color-border-strong); border-radius: var(--radius-pill); padding: 0 var(--space-5); height: var(--control-height-md); }
+  .input-boxed:focus { border: var(--border-width) solid var(--color-primary); box-shadow: var(--focus-ring); padding: 0 var(--space-5); }
+  .check { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); cursor: pointer; }
+  .check input { accent-color: var(--color-primary); width: 18px; height: 18px; margin: 0; }
+
+  /* Thẻ */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-6); }
+  .card { background: var(--color-surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-soft); border: 1px solid var(--color-border); overflow: hidden; display: flex; flex-direction: column; transition: transform var(--duration-base) var(--ease-out), box-shadow var(--duration-base); }
+  .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+  .card .media { height: 140px; background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-crimson) 100%); }
+  .card .media.alt { background: linear-gradient(135deg, var(--color-blue), var(--color-teal)); }
+  .card .body { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-3); flex: 1; }
+  .card .tag { align-self: flex-start; font-size: var(--text-xs); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--color-primary); background: var(--color-primary-soft); padding: 4px 12px; border-radius: var(--radius-pill); }
+  .card h3 { font-size: var(--text-xl); }
+  .card .actions { margin-top: auto; padding-top: var(--space-2); }
+  .card-dark { background: var(--color-ink); border-color: var(--color-ink); }
+  .card-dark h3 { color: var(--color-on-dark); }
+  .card-dark p { color: #C9C5CE; }
+  .card-stat .num { font-size: var(--text-5xl); font-weight: var(--weight-bold); color: var(--color-primary); line-height: 1; }
+  .card-flat { box-shadow: none; background: var(--color-surface-alt); border-color: transparent; border-radius: var(--radius-lg); }
+  .card-flat:hover { transform: none; box-shadow: none; }
+
+  footer { padding: var(--space-10) 0; background: var(--color-surface-alt); font-size: var(--text-sm); }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="container">
+    <h1>Design <span>System</span></h1>
+    <p>Bảng màu, kiểu chữ, nút, ô nhập và thẻ — học phong cách từ canhcam.vn: nền sáng, nhấn đỏ cam, tiêu đề đậm viết hoa, nút bo tròn hoàn toàn, thẻ bo lớn và bóng rất nhẹ.</p>
+  </div>
+</header>
+
+<nav class="toc"><div class="container">
+  <a href="#colors">Màu sắc</a><a href="#type">Kiểu chữ</a><a href="#tokens">Khoảng cách &amp; bo góc</a><a href="#buttons">Nút bấm</a><a href="#inputs">Ô nhập</a><a href="#cards">Thẻ</a>
+</div></nav>
+
+<main>
+<!-- ================= MÀU SẮC ================= -->
+<section id="colors"><div class="container">
+  <h2 class="section-title">Màu sắc</h2>
+  <p class="section-desc">Màu chủ đạo là đỏ cam <code>#F73936</code> trên nền trắng, chữ thân bài tím xám <code>#6F6875</code>, tiêu đề và nền tối dùng <code>#222</code>.</p>
+
+  <div class="group"><h3>Thương hiệu</h3><div class="swatches">
+    <div class="swatch"><div class="chip" style="background:var(--color-primary)"></div><div class="meta"><b>Primary</b><span>#F73936</span></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--color-primary-hover)"></div><div class="meta"><b>Primary hover</b><span>#D92B28</span></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--color-crimson)"></div><div class="meta"><b>Crimson</b><span>#B41C3E</span></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--color-primary-soft)"></div><div class="meta"><b>Primary soft</b><span>#FEECEB</span></div></div>
+  </div></div>
+
+  <div class="group"><h3>Trung tính</h3><div class="swatches">
+    <div class="swatch"><div class="chip" style="background:var(--color-ink)"></div><div class="meta"><b>Ink</b><span>#222222</span></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--color-text)"></div><div class="meta"><b>Text</b><span>#6F6875</span></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--color-text-muted)"></div><div class="meta"><b>Muted</b><span>#9CA3AF</span></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--color-border-strong)"></div><div class="meta"><b>Border strong</b><span>#D0D2D7</span></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--color-border)"></div><div class="meta"><b>Border</b><span>#E5E7EB</span></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--color-surface-alt)"></div><div class="meta"><b>Surface alt</b><span>#F1F1F1</span></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--color-surface)"></div><div class="meta"><b>Surface</b><span>#FFFFFF</span></div></div>
+  </div></div>
+
+  <div class="group"><h3>Nhấn &amp; trạng thái</h3><div class="swatches">
+    <div class="swatch"><div class="chip" style="background:var(--color-teal)"></div><div class="meta"><b>Teal</b><span>#16D8CF</span></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--color-blue)"></div><div class="meta"><b>Blue / Info</b><span>#0B87AE</span></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--color-success)"></div><div class="meta"><b>Success</b><span>#12A594</span></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--color-warning)"></div><div class="meta"><b>Warning</b><span>#F5A524</span></div></div>
+    <div class="swatch"><div class="chip" style="background:var(--color-danger)"></div><div class="meta"><b>Danger</b><span>#FF5252</span></div></div>
+  </div></div>
+</div></section>
+
+<!-- ================= KIỂU CHỮ ================= -->
+<section id="type"><div class="container">
+  <h2 class="section-title">Kiểu chữ</h2>
+  <p class="section-desc">Một họ chữ duy nhất: <b>Inter Tight</b>. Tiêu đề đậm (700), hay viết hoa cho tiêu đề mục; thân bài 16px, độ đậm 400.</p>
+  <div class="group">
+    <div class="type-row"><span class="label">text-5xl · 56 / 700</span><div style="font-size:var(--text-5xl);font-weight:700;color:var(--color-ink);line-height:1.1">Thiết kế nổi bật</div></div>
+    <div class="type-row"><span class="label">text-4xl · 48 / 700</span><div style="font-size:var(--text-4xl);font-weight:700;color:var(--color-ink);line-height:1.15">Thiết kế nổi bật</div></div>
+    <div class="type-row"><span class="label">text-3xl · 40 / 700</span><div style="font-size:var(--text-3xl);font-weight:700;color:var(--color-ink);text-transform:uppercase;letter-spacing:var(--tracking-wide)">Tiêu đề mục viết hoa</div></div>
+    <div class="type-row"><span class="label">text-2xl · 30 / 700</span><div style="font-size:var(--text-2xl);font-weight:700;color:var(--color-ink)">Tiêu đề cấp hai</div></div>
+    <div class="type-row"><span class="label">text-xl · 24 / 700</span><div style="font-size:var(--text-xl);font-weight:700;color:var(--color-ink)">Tiêu đề thẻ</div></div>
+    <div class="type-row"><span class="label">text-lg · 20 / 300</span><div style="font-size:var(--text-lg);font-weight:300">Đoạn dẫn nhập, nét chữ mảnh dùng cho phụ đề trên nền tối hoặc ảnh.</div></div>
+    <div class="type-row"><span class="label">text-md · 18 / 400</span><div style="font-size:var(--text-md)">Đoạn văn lớn dùng cho phần mở đầu của mục.</div></div>
+    <div class="type-row"><span class="label">text-base · 16 / 400</span><div>Thân bài mặc định. Màu chữ tím xám giúp trang đọc êm, giữ độ tương phản vừa đủ trên nền trắng.</div></div>
+    <div class="type-row"><span class="label">text-sm · 14 / 400</span><div style="font-size:var(--text-sm)">Chú thích, nhãn, nội dung ô nhập.</div></div>
+    <div class="type-row"><span class="label">text-xs · 12 / 600</span><div style="font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:var(--tracking-wide)">Nhãn nhỏ viết hoa</div></div>
+  </div>
+  <div class="group"><h3>Độ đậm</h3>
+    <div class="row" style="font-size:var(--text-xl);color:var(--color-ink)">
+      <span style="font-weight:300">Light 300</span><span style="font-weight:400">Regular 400</span><span style="font-weight:500">Medium 500</span><span style="font-weight:600">Semibold 600</span><span style="font-weight:700">Bold 700</span>
+    </div>
+  </div>
+</div></section>
+
+<!-- ================= KHOẢNG CÁCH & BO GÓC ================= -->
+<section id="tokens"><div class="container">
+  <h2 class="section-title">Khoảng cách &amp; bo góc</h2>
+  <div class="group"><h3>Khoảng cách (nhịp 4px)</h3>
+    <div class="space-row"><span class="name">space-1</span><div class="bar" style="width:4px"></div>4px</div>
+    <div class="space-row"><span class="name">space-2</span><div class="bar" style="width:8px"></div>8px</div>
+    <div class="space-row"><span class="name">space-3</span><div class="bar" style="width:12px"></div>12px</div>
+    <div class="space-row"><span class="name">space-4</span><div class="bar" style="width:16px"></div>16px</div>
+    <div class="space-row"><span class="name">space-6</span><div class="bar" style="width:24px"></div>24px</div>
+    <div class="space-row"><span class="name">space-8</span><div class="bar" style="width:32px"></div>32px</div>
+    <div class="space-row"><span class="name">space-12</span><div class="bar" style="width:48px"></div>48px</div>
+    <div class="space-row"><span class="name">space-16</span><div class="bar" style="width:64px"></div>64px</div>
+    <div class="space-row"><span class="name">space-24</span><div class="bar" style="width:96px"></div>96px</div>
+  </div>
+  <div class="group"><h3>Bo góc</h3><div class="radii">
+    <div class="r"><div style="border-radius:var(--radius-none)"></div>none · 0<br>ô nhập</div>
+    <div class="r"><div style="border-radius:var(--radius-sm)"></div>sm · 8</div>
+    <div class="r"><div style="border-radius:var(--radius-md)"></div>md · 12</div>
+    <div class="r"><div style="border-radius:var(--radius-lg)"></div>lg · 20</div>
+    <div class="r"><div style="border-radius:var(--radius-xl)"></div>xl · 32<br>thẻ</div>
+    <div class="r"><div style="border-radius:var(--radius-pill)"></div>pill · 9999<br>nút</div>
+  </div></div>
+</div></section>
+
+<!-- ================= NÚT BẤM ================= -->
+<section id="buttons"><div class="container">
+  <h2 class="section-title">Nút bấm</h2>
+  <p class="section-desc">Nút bo tròn hoàn toàn, chữ đậm vừa. Nút chính màu đỏ cam; phụ dùng viền hoặc nền tối.</p>
+  <div class="group"><h3>Biến thể</h3><div class="row">
+    <button class="btn btn-primary">Nhận tư vấn</button>
+    <button class="btn btn-dark">Xem dự án</button>
+    <button class="btn btn-outline">Tìm hiểu thêm</button>
+    <button class="btn btn-ghost">Hủy</button>
+    <button class="btn btn-link">Liên kết văn bản →</button>
+  </div></div>
+  <div class="group"><h3>Kích cỡ</h3><div class="row">
+    <button class="btn btn-primary btn-sm">Nhỏ 36</button>
+    <button class="btn btn-primary">Vừa 44</button>
+    <button class="btn btn-primary btn-lg">Lớn 52</button>
+  </div></div>
+  <div class="group"><h3>Trạng thái</h3><div class="row">
+    <button class="btn btn-primary">Mặc định</button>
+    <button class="btn btn-primary" style="background:var(--color-primary-hover)">Hover</button>
+    <button class="btn btn-primary" style="box-shadow:var(--focus-ring), var(--shadow-primary)">Focus</button>
+    <button class="btn btn-primary" disabled>Vô hiệu</button>
+  </div></div>
+  <div class="group"><h3>Trên nền tối</h3><div class="on-dark row">
+    <button class="btn btn-primary">Bắt đầu</button>
+    <button class="btn btn-outline">Liên hệ</button>
+  </div></div>
+</div></section>
+
+<!-- ================= Ô NHẬP ================= -->
+<section id="inputs"><div class="container">
+  <h2 class="section-title">Ô nhập</h2>
+  <p class="section-desc">Mặc định là ô chỉ có đường kẻ dưới, vuông góc, chuyển sang đường đỏ cam khi focus. Có thêm biến thể bo tròn có viền.</p>
+  <div class="group"><h3>Biểu mẫu</h3>
+    <form class="form-grid" onsubmit="return false">
+      <div class="field"><label for="n">Họ và tên</label><input class="input" id="n" placeholder="Nguyễn Văn A"></div>
+      <div class="field"><label for="e">Email</label><input class="input" id="e" type="email" placeholder="ban@congty.vn"><span class="hint">Chúng tôi chỉ dùng để phản hồi yêu cầu.</span></div>
+      <div class="field"><label for="s">Dịch vụ</label>
+        <select class="select input" id="s"><option>Thiết kế website</option><option>Landing page</option><option>Bảo trì</option></select></div>
+      <div class="field error"><label for="p">Số điện thoại</label><input class="input" id="p" value="09xx" aria-invalid="true"><span class="hint">Số điện thoại chưa đúng định dạng.</span></div>
+      <div class="field" style="grid-column:1/-1"><label for="m">Nội dung</label><textarea class="textarea" id="m" placeholder="Mô tả ngắn nhu cầu của bạn"></textarea></div>
+      <div class="field"><label>Vô hiệu</label><input class="input" disabled value="Không thể chỉnh sửa"></div>
+      <div class="field"><span class="check"><input type="checkbox" checked id="c"><label for="c" style="font-weight:400">Tôi đồng ý được liên hệ</label></span></div>
+      <div style="grid-column:1/-1"><button class="btn btn-primary">Gửi yêu cầu</button></div>
+    </form>
+  </div>
+  <div class="group"><h3>Biến thể có viền, bo tròn</h3>
+    <div class="row" style="max-width:520px"><input class="input input-boxed" placeholder="Nhập email của bạn" style="flex:1;min-width:200px"><button class="btn btn-primary">Đăng ký</button></div>
+  </div>
+</div></section>
+
+<!-- ================= THẺ ================= -->
+<section id="cards"><div class="container">
+  <h2 class="section-title">Thẻ</h2>
+  <p class="section-desc">Thẻ bo rất lớn (32px), viền mảnh, bóng đổ gần như không thấy; nổi lên nhẹ khi di chuột.</p>
+  <div class="group"><h3>Thẻ nội dung</h3><div class="cards">
+    <article class="card"><div class="media"></div><div class="body"><span class="tag">Thiết kế</span><h3>Tiêu đề thẻ có ảnh</h3><p>Phần mô tả ngắn gọn về nội dung, hai đến ba dòng là đủ để người đọc nắm ý.</p><div class="actions"><a class="btn btn-link" href="#">Xem chi tiết →</a></div></div></article>
+    <article class="card"><div class="media alt"></div><div class="body"><span class="tag">Giải pháp</span><h3>Thẻ với ảnh nhấn xanh</h3><p>Dải màu nhấn xanh ngọc và xanh dương dùng cho nhóm nội dung phụ.</p><div class="actions"><a class="btn btn-outline btn-sm" href="#">Tìm hiểu</a></div></div></article>
+    <article class="card card-dark"><div class="body"><span class="tag">Nổi bật</span><h3>Thẻ nền tối</h3><p>Dùng để tạo điểm nhấn giữa các khối nền sáng, nút chính vẫn là đỏ cam.</p><div class="actions"><a class="btn btn-primary btn-sm" href="#">Bắt đầu</a></div></div></article>
+  </div></div>
+  <div class="group"><h3>Thẻ số liệu và thẻ phẳng</h3><div class="cards">
+    <article class="card card-stat"><div class="body"><div class="num">20+</div><h3>Năm kinh nghiệm</h3><p>Con số lớn màu chủ đạo, nhãn đậm bên dưới.</p></div></article>
+    <article class="card card-stat"><div class="body"><div class="num">6.000</div><h3>Khách hàng</h3><p>Dùng cùng khoảng cách và bo góc với thẻ nội dung.</p></div></article>
+    <article class="card card-flat"><div class="body"><h3>Thẻ phẳng</h3><p>Nền xám nhạt, không bóng, bo 20px. Hợp với danh sách hoặc ghi chú.</p></div></article>
+  </div></div>
+</div></section>
+</main>
+
+<footer><div class="container">Phong cách tham khảo từ canhcam.vn · chỉ học màu, chữ, bố cục; không dùng logo, hình ảnh hay nội dung gốc. Mọi giá trị nằm trong <code>tokens.css</code>.</div></footer>
+
+</body>
+</html>

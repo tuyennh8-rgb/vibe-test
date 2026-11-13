@@ -1,0 +1,126 @@
+/* ==========================================================================
+   Design tokens — phong cách học từ canhcam.vn
+   Chỉ lấy phong cách (màu, chữ, nhịp khoảng cách, độ bo). Không dùng logo,
+   hình ảnh hay nội dung của website gốc.
+
+   Nguồn quan sát: CSS công khai của canhcam.vn
+   - Giữ nguyên giá trị đo được: --cc-primary #F73936, mực #222, chữ #6F6875,
+     font Inter Tight, nút bo tròn hoàn toàn (9999px), thẻ bo rất lớn,
+     bóng đổ rất nhẹ (alpha .04).
+   - Giá trị suy ra (hover, tint, thang cỡ chữ, thang khoảng cách) được đánh
+     dấu "suy ra".
+   ========================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800&display=swap");
+
+:root {
+  /* ---------- Màu: thương hiệu ---------- */
+  --color-primary:        #F73936;  /* đo được: màu chủ đạo, nút, liên kết */
+  --color-primary-hover:  #D92B28;  /* suy ra: tối hơn ~12% */
+  --color-primary-active: #B41C3E;  /* đo được: đỏ sẫm dùng ở một số khối */
+  --color-primary-soft:   #FEECEB;  /* suy ra: nền nhạt của màu chủ đạo */
+  --color-primary-ring:   rgba(247, 57, 54, .28); /* suy ra: vòng focus */
+  --color-crimson:        #B41C3E;  /* đo được */
+
+  /* ---------- Màu: phụ / nhấn ---------- */
+  --color-teal:           #16D8CF;  /* đo được: nhấn xanh ngọc */
+  --color-blue:           #0B87AE;  /* đo được: nhấn xanh dương */
+
+  /* ---------- Màu: trung tính ---------- */
+  --color-ink:            #222222;  /* đo được: tiêu đề, nền tối */
+  --color-text:           #6F6875;  /* đo được: chữ thân bài (tím xám) */
+  --color-text-strong:    #555555;  /* đo được */
+  --color-text-muted:     #9CA3AF;  /* đo được: placeholder */
+  --color-border:         #E5E7EB;  /* đo được */
+  --color-border-strong:  #D0D2D7;  /* đo được */
+  --color-surface-alt:    #F1F1F1;  /* đo được: nền khối phụ */
+  --color-surface:        #FFFFFF;
+  --color-on-primary:     #FFFFFF;
+  --color-on-dark:        #FFFFFF;
+
+  /* ---------- Màu: trạng thái (suy ra) ---------- */
+  --color-success:        #12A594;
+  --color-warning:        #F5A524;
+  --color-danger:         #FF5252;  /* đo được: dùng cho hiệu ứng xung */
+  --color-info:           #0B87AE;
+
+  /* ---------- Kiểu chữ ---------- */
+  --font-sans:    "Inter Tight", ui-sans-serif, system-ui, -apple-system,
+                  "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Inter Tight", var(--font-sans);
+  --font-mono:    ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --weight-light:    300;
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;  /* tiêu đề của site dùng 700 */
+
+  --leading-tight:   1.2;
+  --leading-snug:    1.35;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.7;
+
+  --tracking-tight:  -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide:   0.04em;   /* dùng cho tiêu đề IN HOA */
+
+  /* ---------- Cỡ chữ (px; suy ra từ các cỡ của site: 14/16/18/20/24/30/40/48) ---------- */
+  --text-xs:   12px;
+  --text-sm:   14px;   /* ô nhập, chú thích */
+  --text-base: 16px;   /* thân bài */
+  --text-md:   18px;
+  --text-lg:   20px;
+  --text-xl:   24px;
+  --text-2xl:  30px;
+  --text-3xl:  40px;
+  --text-4xl:  48px;
+  --text-5xl:  56px;   /* tiêu đề hero */
+
+  /* ---------- Khoảng cách (nhịp 4px) ---------- */
+  --space-0:  0;
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  --container-max: 1200px;
+  --gutter:        var(--space-6);
+
+  /* ---------- Bo góc ---------- */
+  --radius-none: 0;        /* đo được: ô nhập, khối vuông */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   20px;
+  --radius-xl:   32px;     /* gần với thẻ lớn ~2.6rem của site */
+  --radius-pill: 9999px;   /* đo được: nút bo tròn hoàn toàn */
+
+  /* ---------- Viền ---------- */
+  --border-width: 1px;
+  --border-width-strong: 2px;
+
+  /* ---------- Bóng đổ (rất nhẹ, như site: alpha .04) ---------- */
+  --shadow-soft:  3px 3px 24px 12px rgba(0, 0, 0, .04);  /* đo được */
+  --shadow-md:    0 8px 24px rgba(0, 0, 0, .08);         /* suy ra */
+  --shadow-lg:    0 16px 40px rgba(0, 0, 0, .12);        /* suy ra */
+  --shadow-primary: 0 8px 20px rgba(247, 57, 54, .28);   /* suy ra */
+
+  /* ---------- Chuyển động ---------- */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --ease-out: cubic-bezier(.2, .7, .2, 1);
+
+  /* ---------- Thành phần ---------- */
+  --control-height-sm: 36px;
+  --control-height-md: 44px;
+  --control-height-lg: 52px;
+  --focus-ring: 0 0 0 3px var(--color-primary-ring);
+}
