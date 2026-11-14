@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>03 · Màn hình — Đập chuột</title>
+<link rel="stylesheet" href="../design/tokens.css">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html">Đập <span>chuột</span></a>
+  <nav>
+    <a href="index.html">Mục lục</a>
+    <a href="01-tong-quan.html">01 Tổng quan</a>
+    <a href="02-chuc-nang.html">02 Chức năng</a>
+    <a href="03-man-hinh.html" aria-current="page">03 Màn hình</a>
+    <a href="04-quy-tac-du-lieu.html">04 Quy tắc &amp; dữ liệu</a>
+    <a href="05-ke-hoach-test.html">05 Kế hoạch test</a>
+  </nav>
+</div></div>
+
+<header class="page-head"><div class="inner">
+  <div class="eyebrow">Tài liệu 03 / 05</div>
+  <h1>Màn hình</h1>
+  <p class="lead">3 màn hình, phác bố cục bằng khung đơn giản. Màu, chữ, bo góc lấy từ design system.</p>
+</div></header>
+
+<div class="wrap">
+  <aside class="toc"><h2>Trong trang này</h2><ul>
+    <li><a href="#tong-quan">Tổng quan 3 màn hình</a></li>
+    <li><a href="#bat-dau">M1 · Bắt đầu</a></li>
+    <li><a href="#choi">M2 · Chơi</a></li>
+    <li><a href="#ket-thuc">M3 · Kết thúc</a></li>
+    <li><a href="#phan-hoi">Phản hồi &amp; trạng thái</a></li>
+    <li><a href="#responsive">Co giãn màn hình</a></li>
+    <li><a href="#phong-cach">Áp dụng design system</a></li>
+  </ul></aside>
+
+  <main>
+    <section id="tong-quan">
+      <h2>Tổng quan 3 màn hình</h2>
+      <div class="screens">
+        <div>
+          <div class="phone">
+            <div class="w-title">Đập <span>chuột</span></div>
+            <div class="w-note">Đập chuột trong 30 giây.<br>Trúng +1, trượt −1.</div>
+            <div class="w-note">Kỷ lục: <b>18</b></div>
+            <div class="w-btn">Bắt đầu</div>
+          </div>
+          <p class="caption"><strong>M1</strong> · Bắt đầu</p>
+        </div>
+        <div>
+          <div class="phone" style="justify-content:flex-start">
+            <div class="w-hud"><div>Điểm<b>7</b></div><div>Thời gian<b>21</b></div></div>
+            <div class="w-grid">
+              <div class="w-cell">🕳️</div><div class="w-cell">🕳️</div><div class="w-cell on">🐹</div>
+              <div class="w-cell">🕳️</div><div class="w-cell">🕳️</div><div class="w-cell">🕳️</div>
+              <div class="w-cell">🕳️</div><div class="w-cell">🕳️</div><div class="w-cell">🕳️</div>
+            </div>
+          </div>
+          <p class="caption"><strong>M2</strong> · Chơi</p>
+        </div>
+        <div>
+          <div class="phone">
+            <div class="w-title">Hết giờ!</div>
+            <div class="w-note">Điểm của bạn</div>
+            <div class="w-big">21</div>
+            <div class="w-badge">Kỷ lục mới!</div>
+            <div class="w-note">Kỷ lục: <b>21</b></div>
+            <div class="w-btn">Chơi lại</div>
+          </div>
+          <p class="caption"><strong>M3</strong> · Kết thúc</p>
+        </div>
+      </div>
+      <div class="flow">
+        <div class="node"><b>M1 Bắt đầu</b>mở trang</div><div class="arrow">→</div>
+        <div class="node active"><b>M2 Chơi</b>bấm Bắt đầu</div><div class="arrow">→</div>
+        <div class="node"><b>M3 Kết thúc</b>hết 30 giây</div><div class="arrow">↺</div>
+        <div class="node active"><b>M2 Chơi</b>bấm Chơi lại</div>
+      </div>
+    </section>
+
+    <section id="bat-dau">
+      <h2>M1 · Màn hình bắt đầu</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Thành phần</th><th>Nội dung / hành vi</th><th>Chức năng</th></tr></thead>
+        <tbody>
+          <tr><td>Tên game</td><td>“Đập chuột”, cỡ chữ lớn (text-4xl), chữ “chuột” màu primary.</td><td>—</td></tr>
+          <tr><td>Hướng dẫn</td><td>“Đập chuột trong 30 giây. Trúng +1 điểm, trượt −1 điểm.”</td><td>—</td></tr>
+          <tr><td>Kỷ lục</td><td>“Kỷ lục: N”. Nếu chưa có thì ẩn dòng này hoặc hiện “Kỷ lục: 0”.</td><td>CN-08</td></tr>
+          <tr><td>Nút Bắt đầu</td><td>Nút chính (primary), cỡ lớn, đặt giữa. Có thể kích hoạt bằng phím <kbd>Enter</kbd> khi đang focus.</td><td>CN-01</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="choi">
+      <h2>M2 · Màn hình chơi</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Thành phần</th><th>Nội dung / hành vi</th><th>Chức năng</th></tr></thead>
+        <tbody>
+          <tr><td>Điểm</td><td>Nhãn “Điểm” và số hiện tại, cỡ lớn, màu primary. Cập nhật ngay sau mỗi lần bấm.</td><td>CN-05</td></tr>
+          <tr><td>Thời gian</td><td>Nhãn “Thời gian” và số giây còn lại (30 → 0). Khi còn dưới 6 giây đổi sang màu primary đậm để nhắc.</td><td>CN-02</td></tr>
+          <tr><td>Lưới 3×3</td><td>9 ô vuông bằng nhau, cách đều. Ô trống hiện 🕳️, ô có chuột hiện 🐹. Mỗi ô là một nút bấm.</td><td>CN-03, CN-04</td></tr>
+          <tr><td>Phản hồi</td><td>Trúng: ô nháy đỏ cam nhạt. Trượt: ô nháy viền đỏ. Xem phần “Phản hồi &amp; trạng thái”.</td><td>CN-09</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout info"><p>Không có nút tạm dừng, không có nút thoát. Muốn dừng sớm, người chơi tải lại trang (lượt đó bỏ).</p></div>
+    </section>
+
+    <section id="ket-thuc">
+      <h2>M3 · Màn hình kết thúc</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Thành phần</th><th>Nội dung / hành vi</th><th>Chức năng</th></tr></thead>
+        <tbody>
+          <tr><td>Tiêu đề</td><td>“Hết giờ!”</td><td>CN-06</td></tr>
+          <tr><td>Điểm lượt vừa chơi</td><td>Số lớn (text-5xl), màu primary.</td><td>CN-06</td></tr>
+          <tr><td>Nhãn “Kỷ lục mới!”</td><td>Chỉ hiện khi điểm &gt; kỷ lục cũ và điểm &gt; 0.</td><td>CN-08</td></tr>
+          <tr><td>Kỷ lục</td><td>“Kỷ lục: N” sau khi đã cập nhật.</td><td>CN-08</td></tr>
+          <tr><td>Nút Chơi lại</td><td>Nút chính, đặt giữa; vào thẳng màn hình chơi.</td><td>CN-07</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="phan-hoi">
+      <h2>Phản hồi &amp; trạng thái</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Tình huống</th><th>Hiển thị</th></tr></thead>
+        <tbody>
+          <tr><td>Chuột đang hiện</td><td>Ô nền primary-soft, viền primary, hiện 🐹.</td></tr>
+          <tr><td>Bấm trúng</td><td>Chuột biến mất ngay; ô nháy primary-soft khoảng 200 ms; điểm tăng 1.</td></tr>
+          <tr><td>Bấm trượt</td><td>Ô nháy viền danger khoảng 200 ms; điểm giảm 1 (không dưới 0).</td></tr>
+          <tr><td>Chuột tự biến mất</td><td>Chuột biến mất, không có hiệu ứng, điểm không đổi.</td></tr>
+          <tr><td>Hết giờ</td><td>Chuột biến mất, chuyển sang M3 ngay, bấm vào lưới không còn tác dụng.</td></tr>
+          <tr><td>Focus bàn phím</td><td>Mọi nút có vòng focus (focus-ring) rõ ràng.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="responsive">
+      <h2>Co giãn màn hình</h2>
+      <ul>
+        <li>Từ chiều rộng <strong>320 px</strong> trở lên, không phải cuộn trang khi đang chơi; lưới nằm trọn trong khung nhìn.</li>
+        <li>Mỗi ô tối thiểu <strong>64 px</strong> để chạm bằng ngón tay.</li>
+        <li>Trên màn hình rộng, lưới giữ hình vuông, tối đa khoảng 420 px, căn giữa.</li>
+        <li>Không để trình duyệt tự phóng to khi chạm đúp vào lưới (ngăn zoom khi nhấp nhanh).</li>
+      </ul>
+    </section>
+
+    <section id="phong-cach">
+      <h2>Áp dụng design system</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Phần tử</th><th>Token dùng</th></tr></thead>
+        <tbody>
+          <tr><td>Nền trang</td><td><code>--color-surface</code>; thân chữ <code>--color-text</code>; tiêu đề <code>--color-ink</code></td></tr>
+          <tr><td>Nút Bắt đầu / Chơi lại</td><td>Nút primary: <code>--color-primary</code>, <code>--radius-pill</code>, <code>--shadow-primary</code></td></tr>
+          <tr><td>Ô lưới</td><td><code>--color-surface-alt</code>, <code>--radius-lg</code>; ô có chuột dùng <code>--color-primary-soft</code> và viền <code>--color-primary</code></td></tr>
+          <tr><td>Ô trượt</td><td>Viền <code>--color-danger</code></td></tr>
+          <tr><td>Điểm, đồng hồ</td><td><code>--text-2xl</code> đến <code>--text-5xl</code>, <code>--weight-bold</code>, màu <code>--color-primary</code></td></tr>
+          <tr><td>Khoảng cách</td><td>Thang <code>--space-*</code> (nhịp 4 px)</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <nav class="pager" aria-label="Điều hướng"><a href="02-chuc-nang.html">← 02 Chức năng</a><a href="04-quy-tac-du-lieu.html">04 Quy tắc &amp; dữ liệu →</a></nav>
+  </main>
+</div>
+<footer class="site-foot"><div class="inner">Bộ tài liệu game Đập chuột · chỉ là đặc tả, chưa có code · giao diện theo <code>design/tokens.css</code></div></footer>
+</body>
+</html>

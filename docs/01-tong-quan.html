@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>01 · Tổng quan — Đập chuột</title>
+<link rel="stylesheet" href="../design/tokens.css">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html">Đập <span>chuột</span></a>
+  <nav>
+    <a href="index.html">Mục lục</a>
+    <a href="01-tong-quan.html" aria-current="page">01 Tổng quan</a>
+    <a href="02-chuc-nang.html">02 Chức năng</a>
+    <a href="03-man-hinh.html">03 Màn hình</a>
+    <a href="04-quy-tac-du-lieu.html">04 Quy tắc &amp; dữ liệu</a>
+    <a href="05-ke-hoach-test.html">05 Kế hoạch test</a>
+  </nav>
+</div></div>
+
+<header class="page-head"><div class="inner">
+  <div class="eyebrow">Tài liệu 01 / 05</div>
+  <h1>Tổng quan</h1>
+  <p class="lead">Game đập chuột chạy trên trình duyệt: lưới 3×3, mỗi lượt 30 giây, đập trúng được điểm, bấm trượt bị trừ điểm.</p>
+</div></header>
+
+<div class="wrap">
+  <aside class="toc"><h2>Trong trang này</h2><ul>
+    <li><a href="#muc-tieu">Mục tiêu</a></li>
+    <li><a href="#quyet-dinh">Quyết định đã chốt</a></li>
+    <li><a href="#pham-vi">Phạm vi</a></li>
+    <li><a href="#nen-tang">Nền tảng</a></li>
+    <li><a href="#thuat-ngu">Thuật ngữ</a></li>
+    <li><a href="#gia-dinh">Giả định cần xác nhận</a></li>
+  </ul></aside>
+
+  <main>
+    <div class="callout">
+      <p><strong>Trạng thái: chỉ là đặc tả, chưa có code game.</strong> Bộ tài liệu này dựa trên <code>YEU-CAU.md</code> và 5 câu phỏng vấn. Khi hai nơi khác nhau thì <strong>bộ tài liệu này là bản mới nhất</strong> (điểm khác duy nhất: bấm trượt nay bị trừ 1 điểm).</p>
+    </div>
+
+    <section id="muc-tieu">
+      <h2>Mục tiêu</h2>
+      <p>Làm một mini game nhỏ, vui, chơi được ngay khi mở trang, không cần cài đặt hay đăng nhập. Người chơi có 30 giây để đập càng nhiều chuột càng tốt và cố phá kỷ lục của chính mình.</p>
+      <div class="grid">
+        <div class="card"><div class="num">3×3</div><h3>Lưới 9 ô</h3><p>Mỗi ô là một hang, mỗi lúc chỉ có 1 chuột.</p></div>
+        <div class="card"><div class="num">30 s</div><h3>Mỗi lượt</h3><p>Đồng hồ đếm ngược, hết giờ là dừng ngay.</p></div>
+        <div class="card"><div class="num">+1 / −1</div><h3>Điểm</h3><p>Trúng được 1 điểm, trượt bị trừ 1 điểm, điểm không âm.</p></div>
+      </div>
+      <h3>Đối tượng</h3>
+      <p>Người chơi phổ thông, chơi một mình, trên máy tính hoặc điện thoại. Không có tài khoản, không có bảng xếp hạng chung.</p>
+    </section>
+
+    <section id="quyet-dinh">
+      <h2>Quyết định đã chốt</h2>
+      <p>Kết quả 5 câu phỏng vấn, mỗi quyết định có mã để các tài liệu khác dẫn lại.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Câu hỏi</th><th>Quyết định</th><th>Ghi chú</th></tr></thead>
+        <tbody>
+          <tr><td>Q1</td><td>Tốc độ chuột có đổi trong lượt?</td><td><strong>Cố định</strong>: ở lại 800 ms, nghỉ 200 ms</td><td>Bạn để “không có ý kiến”, nên chọn phương án mặc định.</td></tr>
+          <tr><td>Q2</td><td>Bấm vào ô trống?</td><td><strong>Trừ 1 điểm</strong>, điểm không xuống dưới 0</td><td>Khác <code>YEU-CAU.md</code> (trước đó không phạt).</td></tr>
+          <tr><td>Q3</td><td>Hình chuột và hang?</td><td><strong>Emoji</strong> 🐹 và 🕳️</td><td>Không cần file ảnh.</td></tr>
+          <tr><td>Q4</td><td>Lưu điểm cao?</td><td><strong>1 kỷ lục</strong> trên trình duyệt của người chơi</td><td>Dùng <code>localStorage</code>, không máy chủ.</td></tr>
+          <tr><td>Q5</td><td>Tạm dừng, âm thanh?</td><td><strong>Không có cả hai</strong></td><td>Giữ game gọn.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="pham-vi">
+      <h2>Phạm vi</h2>
+      <div class="grid">
+        <div class="card"><h3>Có trong bản đầu</h3>
+          <ul>
+            <li>3 màn hình: bắt đầu, chơi, kết thúc</li>
+            <li>Đồng hồ 30 giây và điểm hiện tại</li>
+            <li>Chuột xuất hiện ngẫu nhiên, tốc độ cố định</li>
+            <li>Trúng +1, trượt −1</li>
+            <li>Lưu và hiện điểm cao nhất</li>
+            <li>Chơi lại không cần tải lại trang</li>
+          </ul></div>
+        <div class="card"><h3>Chưa làm</h3>
+          <ul>
+            <li>Tạm dừng giữa lượt</li>
+            <li>Âm thanh và nhạc</li>
+            <li>Nhiều mức khó, chuột tăng tốc</li>
+            <li>Bảng xếp hạng online, nhiều người chơi</li>
+            <li>Đăng nhập, thu thập dữ liệu cá nhân</li>
+            <li>Ảnh hoặc hình vẽ riêng cho chuột</li>
+          </ul></div>
+      </div>
+    </section>
+
+    <section id="nen-tang">
+      <h2>Nền tảng</h2>
+      <ul>
+        <li>Chạy trong trình duyệt hiện đại: Chrome, Safari, Firefox, Edge (bản mới).</li>
+        <li>Dùng được bằng chuột và cảm ứng; bố cục co giãn từ chiều rộng 320 px.</li>
+        <li>Chạy hoàn toàn phía người dùng: một trang web tĩnh, không cần máy chủ.</li>
+        <li>Giao diện theo <a href="../design/design-system.html">design system</a> trong thư mục <code>design/</code> (màu đỏ cam, nút bo tròn, thẻ bo lớn).</li>
+      </ul>
+    </section>
+
+    <section id="thuat-ngu">
+      <h2>Thuật ngữ</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Từ</th><th>Nghĩa</th></tr></thead>
+        <tbody>
+          <tr><td>Lượt chơi</td><td>Một lần chơi trọn 30 giây, từ lúc bấm Bắt đầu đến khi hết giờ.</td></tr>
+          <tr><td>Ô / hang</td><td>Một trong 9 ô của lưới; chuột xuất hiện trong ô.</td></tr>
+          <tr><td>Chuột</td><td>Biểu tượng 🐹 hiện trong một ô, người chơi cần bấm trúng.</td></tr>
+          <tr><td>Bấm trúng</td><td>Bấm vào ô đang có chuột. Chuột biến mất ngay, +1 điểm.</td></tr>
+          <tr><td>Bấm trượt</td><td>Bấm vào ô không có chuột (trừ khoảng bỏ qua, xem tài liệu 04). −1 điểm.</td></tr>
+          <tr><td>Chu kỳ</td><td>1000 ms = 800 ms chuột ở lại + 200 ms nghỉ. Một lượt có 30 chu kỳ.</td></tr>
+          <tr><td>Kỷ lục</td><td>Điểm cao nhất đã lưu trên trình duyệt này.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="gia-dinh">
+      <h2>Giả định cần xác nhận</h2>
+      <p>Những điểm bạn chưa nói rõ; tôi đã chọn cách đơn giản nhất và ghi ra để bạn sửa nếu muốn.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Giả định</th><th>Ảnh hưởng</th></tr></thead>
+        <tbody>
+          <tr><td>G1</td><td>Chuột mới luôn xuất hiện ở ô <strong>khác</strong> ô trước đó.</td><td>Người chơi không bị chuột lặp ô.</td></tr>
+          <tr><td>G2</td><td>Sau khi đập trúng, ô đó trống đến chu kỳ kế tiếp (nhịp 1000 ms không đổi), nên điểm tối đa là 30.</td><td>Đập nhanh không làm chuột ra sớm hơn.</td></tr>
+          <tr><td>G3</td><td>Bấm lần hai trong 150 ms vào đúng ô vừa đập trúng được <strong>bỏ qua</strong>, không bị trừ điểm.</td><td>Tránh phạt oan khi nhấp đúp.</td></tr>
+          <tr><td>G4</td><td>Điểm không âm: bấm trượt khi đang 0 điểm thì vẫn 0.</td><td>Xem tài liệu 04.</td></tr>
+          <tr><td>G5</td><td>Lượt 0 điểm không ghi đè kỷ lục và không báo “Kỷ lục mới!”.</td><td>Xem tài liệu 04.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <nav class="pager" aria-label="Điều hướng"><a href="index.html">← Mục lục</a><a href="02-chuc-nang.html">02 Chức năng →</a></nav>
+  </main>
+</div>
+<footer class="site-foot"><div class="inner">Bộ tài liệu game Đập chuột · chỉ là đặc tả, chưa có code · giao diện theo <code>design/tokens.css</code></div></footer>
+</body>
+</html>

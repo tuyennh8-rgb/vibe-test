@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>05 · Kế hoạch test — Đập chuột</title>
+<link rel="stylesheet" href="../design/tokens.css">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html">Đập <span>chuột</span></a>
+  <nav>
+    <a href="index.html">Mục lục</a>
+    <a href="01-tong-quan.html">01 Tổng quan</a>
+    <a href="02-chuc-nang.html">02 Chức năng</a>
+    <a href="03-man-hinh.html">03 Màn hình</a>
+    <a href="04-quy-tac-du-lieu.html">04 Quy tắc &amp; dữ liệu</a>
+    <a href="05-ke-hoach-test.html" aria-current="page">05 Kế hoạch test</a>
+  </nav>
+</div></div>
+
+<header class="page-head"><div class="inner">
+  <div class="eyebrow">Tài liệu 05 / 05</div>
+  <h1>Kế hoạch test</h1>
+  <p class="lead">Các ca kiểm thử thủ công để xác nhận game đúng với tài liệu, và danh sách tiêu chí hoàn thành.</p>
+</div></header>
+
+<div class="wrap">
+  <aside class="toc"><h2>Trong trang này</h2><ul>
+    <li><a href="#pham-vi">Phạm vi &amp; môi trường</a></li>
+    <li><a href="#luat">Luật chơi &amp; điểm</a></li>
+    <li><a href="#thoi-gian">Thời gian &amp; chuột</a></li>
+    <li><a href="#man-hinh">Màn hình &amp; thao tác</a></li>
+    <li><a href="#luu">Lưu kỷ lục</a></li>
+    <li><a href="#tuong-thich">Tương thích</a></li>
+    <li><a href="#hoan-thanh">Tiêu chí hoàn thành</a></li>
+  </ul></aside>
+
+  <main>
+    <section id="pham-vi">
+      <h2>Phạm vi &amp; môi trường</h2>
+      <p>Test thủ công trên bản game hoàn chỉnh. Mỗi ca có mã TC, tham chiếu chức năng (CN) và quy tắc (QT) để dò ngược.</p>
+      <div class="grid">
+        <div class="card"><h3>Trình duyệt</h3><ul><li>Chrome, Safari, Firefox, Edge (bản mới)</li><li>iPhone: Safari</li><li>Android: Chrome</li></ul></div>
+        <div class="card"><h3>Thiết bị</h3><ul><li>Máy tính, chuột</li><li>Điện thoại, cảm ứng</li><li>Chiều rộng 320 px, 375 px, 768 px, 1280 px</li></ul></div>
+        <div class="card"><h3>Dụng cụ</h3><ul><li>Đồng hồ bấm giờ</li><li>Công cụ dành cho nhà phát triển (console, localStorage)</li></ul></div>
+      </div>
+      <div class="callout info"><p>Kết quả ghi mỗi ca: <strong>Đạt</strong> / <strong>Không đạt</strong> kèm ghi chú và trình duyệt đã dùng.</p></div>
+    </section>
+
+    <section id="luat">
+      <h2>Luật chơi &amp; điểm</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Tham chiếu</th></tr></thead>
+        <tbody>
+          <tr><td>TC-01</td><td>Mở trang, bấm Bắt đầu.</td><td>Vào màn hình chơi: điểm 0, thời gian 30, lưới 9 ô; một chuột xuất hiện ngay.</td><td>CN-01, QT-01</td></tr>
+          <tr><td>TC-02</td><td>Bấm trúng chuột đang hiện.</td><td>Chuột biến mất ngay; điểm +1.</td><td>CN-05, QT-06</td></tr>
+          <tr><td>TC-03</td><td>Bấm trúng một chuột, sau đó chờ hơn 150 ms rồi bấm lại vào đúng ô đó.</td><td>Lần 1 +1; lần 2 bị tính trượt −1.</td><td>CN-05, QT-06</td></tr>
+          <tr><td>TC-04</td><td>Nhấp đúp nhanh (dưới 150 ms) vào chuột.</td><td>Chỉ +1; lần nhấp thứ hai bị bỏ qua, không trừ.</td><td>G3</td></tr>
+          <tr><td>TC-05</td><td>Bấm vào ô trống khi đang có từ 1 điểm trở lên.</td><td>Điểm giảm 1.</td><td>CN-05, QT-06</td></tr>
+          <tr><td>TC-06</td><td>Ngay khi vào lượt (điểm 0), bấm vào ô trống.</td><td>Điểm vẫn là 0, không âm.</td><td>QT-07</td></tr>
+          <tr><td>TC-07</td><td>Để chuột tự biến mất, không bấm.</td><td>Điểm không đổi.</td><td>QT-03</td></tr>
+          <tr><td>TC-08</td><td>Đập trúng 30 chuột, không trượt lần nào.</td><td>Điểm cuối là 30 và không vượt quá 30.</td><td>QT-03, QT-06</td></tr>
+          <tr><td>TC-09</td><td>Bấm Bắt đầu nhiều lần liên tiếp rất nhanh.</td><td>Chỉ có một lượt; nhịp chuột không bị nhân đôi.</td><td>QT-01</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="thoi-gian">
+      <h2>Thời gian &amp; chuột</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Tham chiếu</th></tr></thead>
+        <tbody>
+          <tr><td>TC-10</td><td>Bấm giờ từ lúc bấm Bắt đầu đến khi hiện màn hình kết thúc.</td><td>30 giây, sai số không quá 0,2 giây.</td><td>CN-02, QT-02</td></tr>
+          <tr><td>TC-11</td><td>Quan sát đồng hồ suốt lượt.</td><td>Giảm đều từ 30 về 1, không nhảy cóc, không đứng yên.</td><td>QT-02</td></tr>
+          <tr><td>TC-12</td><td>Quan sát một lượt không bấm gì.</td><td>Mỗi lúc chỉ có tối đa 1 chuột; mỗi chuột ở lại khoảng 0,8 giây, rồi nghỉ khoảng 0,2 giây.</td><td>CN-03, QT-03</td></tr>
+          <tr><td>TC-13</td><td>Quan sát 10 lượt liên tiếp, ghi ô chuột xuất hiện.</td><td>Không có hai chuột liên tiếp cùng ô; cả 9 ô đều xuất hiện ít nhất một lần.</td><td>QT-04</td></tr>
+          <tr><td>TC-14</td><td>Giữa lượt, chuyển sang tab khác 10 giây rồi quay lại.</td><td>Đồng hồ vẫn đúng theo thời gian thực, không chạy chậm lại.</td><td>QT-02</td></tr>
+          <tr><td>TC-15</td><td>Chuyển sang tab khác quá 30 giây rồi quay lại.</td><td>Lượt đã kết thúc, hiện màn hình kết thúc, điểm không tăng.</td><td>QT-08</td></tr>
+          <tr><td>TC-16</td><td>Chờ hết giờ; bấm vào lưới ngay trước và ngay sau 0 giây.</td><td>Sau 0 giây không còn đổi điểm; chuột không hiện sau khi hết giờ.</td><td>CN-06, QT-08</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="man-hinh">
+      <h2>Màn hình &amp; thao tác</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Tham chiếu</th></tr></thead>
+        <tbody>
+          <tr><td>TC-17</td><td>Mở trang lần đầu.</td><td>Màn hình bắt đầu có tên game, hướng dẫn, nút Bắt đầu; kỷ lục hiện 0 hoặc ẩn.</td><td>M1</td></tr>
+          <tr><td>TC-18</td><td>Chơi hết một lượt.</td><td>Hiện “Hết giờ!”, điểm đúng bằng điểm cuối trên màn hình chơi, kỷ lục và nút Chơi lại.</td><td>CN-06, M3</td></tr>
+          <tr><td>TC-19</td><td>Bấm Chơi lại ngay khi vừa hết giờ, lặp 5 lần liên tiếp.</td><td>Điểm về 0, đồng hồ về 30; vẫn chỉ một nhịp chuột, đồng hồ không chạy nhanh hơn.</td><td>CN-07, QT-09</td></tr>
+          <tr><td>TC-20</td><td>Bấm trúng và bấm trượt, quan sát hiệu ứng.</td><td>Hai hiệu ứng khác nhau rõ; mỗi hiệu ứng dưới 300 ms; không chặn lần bấm kế tiếp.</td><td>CN-09</td></tr>
+          <tr><td>TC-21</td><td>Dùng bàn phím: Tab đến Bắt đầu, nhấn Enter.</td><td>Có vòng focus rõ; Enter bắt đầu lượt.</td><td>M1</td></tr>
+          <tr><td>TC-22</td><td>Đo thời gian từ lúc bấm đến lúc hiện phản hồi.</td><td>Dưới 100 ms.</td><td>CN-04</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="luu">
+      <h2>Lưu kỷ lục</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Tham chiếu</th></tr></thead>
+        <tbody>
+          <tr><td>TC-23</td><td>Xóa dữ liệu trang. Chơi lượt đầu và đạt từ 1 điểm trở lên.</td><td>Hiện “Kỷ lục mới!”; kỷ lục bằng điểm vừa đạt.</td><td>QT-10</td></tr>
+          <tr><td>TC-24</td><td>Tải lại trang.</td><td>Màn hình bắt đầu vẫn hiện kỷ lục đã lưu.</td><td>CN-08</td></tr>
+          <tr><td>TC-25</td><td>Chơi lượt có điểm thấp hơn kỷ lục.</td><td>Không hiện “Kỷ lục mới!”; kỷ lục giữ nguyên.</td><td>QT-10</td></tr>
+          <tr><td>TC-26</td><td>Chơi lượt có điểm đúng bằng kỷ lục.</td><td>Không hiện “Kỷ lục mới!”.</td><td>QT-10</td></tr>
+          <tr><td>TC-27</td><td>Xóa dữ liệu trang, chơi lượt 0 điểm (không bấm gì).</td><td>Không lưu, không hiện “Kỷ lục mới!”.</td><td>G5</td></tr>
+          <tr><td>TC-28</td><td>Sửa tay giá trị khóa <code>dap-chuot:diem-cao-nhat</code> thành “abc”, “-5”, “999” rồi tải lại.</td><td>Mỗi trường hợp đều hiện kỷ lục 0; game không lỗi.</td><td>QT-11</td></tr>
+          <tr><td>TC-29</td><td>Mở trong cửa sổ riêng tư hoặc chặn dữ liệu trang.</td><td>Game vẫn chơi được trọn lượt; không có lỗi trong console.</td><td>CN-08</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="tuong-thich">
+      <h2>Tương thích</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Tham chiếu</th></tr></thead>
+        <tbody>
+          <tr><td>TC-30</td><td>Mở và chơi một lượt ở mỗi trình duyệt trong danh sách.</td><td>Mọi chức năng đạt như trên máy chuẩn.</td><td>Mục “Nền tảng”</td></tr>
+          <tr><td>TC-31</td><td>Mở ở chiều rộng 320 px.</td><td>Lưới nằm trọn trong khung nhìn, không cuộn ngang, không cuộn dọc khi đang chơi; ô từ 64 px trở lên.</td><td>Mục “Co giãn”</td></tr>
+          <tr><td>TC-32</td><td>Trên điện thoại, chạm nhanh nhiều lần vào lưới.</td><td>Không phóng to trang; mỗi lần chạm đúng một thao tác.</td><td>Mục “Co giãn”</td></tr>
+          <tr><td>TC-33</td><td>Mở console suốt một lượt đầy đủ.</td><td>Không có lỗi hay cảnh báo đỏ.</td><td>—</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="hoan-thanh">
+      <h2>Tiêu chí hoàn thành</h2>
+      <p>Game được coi là xong khi <strong>tất cả</strong> mục sau đạt và các ca TC-01 đến TC-33 đều “Đạt”.</p>
+      <ul class="check">
+        <li>Mở file bằng trình duyệt là chơi được, không cần cài đặt hay máy chủ.</li>
+        <li>Lưới 3×3 đủ 9 ô; mỗi lúc tối đa 1 chuột; chuột mới luôn ở ô khác ô trước.</li>
+        <li>Đồng hồ chạy từ 30 về 0, đủ 30 giây (sai số tối đa 0,2 giây), đúng cả khi chuyển tab.</li>
+        <li>Bấm trúng +1, bấm trượt −1, điểm không âm và không vượt 30; một chuột chỉ cho 1 điểm.</li>
+        <li>Hết giờ: chuột biến mất, lưới khóa, hiện màn hình kết thúc với điểm đúng.</li>
+        <li>Chơi lại đặt lại điểm và đồng hồ, không có bộ đếm cũ chạy ngầm.</li>
+        <li>Kỷ lục lưu và hiện đúng, còn sau khi tải lại; hỏng bộ nhớ trình duyệt thì game vẫn chạy.</li>
+        <li>Dùng được trên điện thoại từ 320 px, thao tác chạm đúng, phản hồi dưới 100 ms.</li>
+        <li>Giao diện dùng đúng token của <code>design/tokens.css</code>; không có lỗi trong console.</li>
+      </ul>
+    </section>
+
+    <nav class="pager" aria-label="Điều hướng"><a href="04-quy-tac-du-lieu.html">← 04 Quy tắc &amp; dữ liệu</a><a href="index.html">Mục lục →</a></nav>
+  </main>
+</div>
+<footer class="site-foot"><div class="inner">Bộ tài liệu game Đập chuột · chỉ là đặc tả, chưa có code · giao diện theo <code>design/tokens.css</code></div></footer>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>04 · Quy tắc &amp; dữ liệu — Đập chuột</title>
+<link rel="stylesheet" href="../design/tokens.css">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html">Đập <span>chuột</span></a>
+  <nav>
+    <a href="index.html">Mục lục</a>
+    <a href="01-tong-quan.html">01 Tổng quan</a>
+    <a href="02-chuc-nang.html">02 Chức năng</a>
+    <a href="03-man-hinh.html">03 Màn hình</a>
+    <a href="04-quy-tac-du-lieu.html" aria-current="page">04 Quy tắc &amp; dữ liệu</a>
+    <a href="05-ke-hoach-test.html">05 Kế hoạch test</a>
+  </nav>
+</div></div>
+
+<header class="page-head"><div class="inner">
+  <div class="eyebrow">Tài liệu 04 / 05</div>
+  <h1>Quy tắc &amp; dữ liệu</h1>
+  <p class="lead">Các con số cấu hình, quy tắc chơi, quy tắc tính điểm và dữ liệu lưu trên trình duyệt.</p>
+</div></header>
+
+<div class="wrap">
+  <aside class="toc"><h2>Trong trang này</h2><ul>
+    <li><a href="#tham-so">Tham số cấu hình</a></li>
+    <li><a href="#quy-tac">Quy tắc chơi</a></li>
+    <li><a href="#diem">Bảng tính điểm</a></li>
+    <li><a href="#trang-thai">Dữ liệu trong lượt</a></li>
+    <li><a href="#luu-tru">Dữ liệu lưu lâu dài</a></li>
+    <li><a href="#bien">Trường hợp biên</a></li>
+  </ul></aside>
+
+  <main>
+    <section id="tham-so">
+      <h2>Tham số cấu hình</h2>
+      <p>Mọi con số nằm một chỗ để dễ đổi sau này; không viết rải rác trong code.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Tên</th><th>Giá trị</th><th>Ý nghĩa</th></tr></thead>
+        <tbody>
+          <tr><td><code>GRID_SIZE</code></td><td>3</td><td>Lưới 3×3, tổng 9 ô.</td></tr>
+          <tr><td><code>GAME_DURATION_MS</code></td><td>30000</td><td>Độ dài một lượt.</td></tr>
+          <tr><td><code>MOLE_VISIBLE_MS</code></td><td>800</td><td>Thời gian chuột ở lại tối đa.</td></tr>
+          <tr><td><code>MOLE_GAP_MS</code></td><td>200</td><td>Nghỉ giữa hai chuột.</td></tr>
+          <tr><td><code>CYCLE_MS</code></td><td>1000</td><td>= VISIBLE + GAP; một chu kỳ.</td></tr>
+          <tr><td><code>HIT_POINTS</code></td><td>+1</td><td>Điểm khi bấm trúng.</td></tr>
+          <tr><td><code>MISS_POINTS</code></td><td>−1</td><td>Điểm khi bấm trượt.</td></tr>
+          <tr><td><code>MIN_SCORE</code></td><td>0</td><td>Điểm không xuống dưới mức này.</td></tr>
+          <tr><td><code>DOUBLE_TAP_GRACE_MS</code></td><td>150</td><td>Khoảng bỏ qua sau khi đập trúng một ô (G3).</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="quy-tac">
+      <h2>Quy tắc chơi</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Quy tắc</th></tr></thead>
+        <tbody>
+          <tr><td>QT-01</td><td>Bấm Bắt đầu chỉ có hiệu lực khi đang ở trạng thái “Chờ”. Điểm đặt 0, đồng hồ đặt 30 giây.</td></tr>
+          <tr><td>QT-02</td><td>Thời gian còn lại tính từ mốc bắt đầu thực (không cộng dồn từng tick). Hiển thị = làm tròn <strong>lên</strong> số giây còn lại, nên màn hình hiện 30 lúc đầu và 1 trước khi hết giờ.</td></tr>
+          <tr><td>QT-03</td><td>Chuột thứ <em>k</em> (k = 0…29) xuất hiện tại thời điểm <em>k × 1000 ms</em> và biến mất sau 800 ms hoặc khi bị đập, tùy cái nào đến trước. Một lượt có đúng 30 chuột.</td></tr>
+          <tr><td>QT-04</td><td>Ô của chuột mới được chọn ngẫu nhiên đều trong <strong>8 ô còn lại</strong>, tức khác ô của chuột ngay trước (G1). Chuột đầu tiên chọn ngẫu nhiên trong 9 ô.</td></tr>
+          <tr><td>QT-05</td><td>Một lần bấm hoặc chạm vào một ô là một thao tác, tính tại thời điểm nhấn xuống. Mỗi ngón chạm được tính riêng.</td></tr>
+          <tr><td>QT-06</td><td>Thao tác vào ô đang có chuột là <strong>trúng</strong>: +1 điểm, chuột biến mất ngay. Thao tác vào ô không có chuột là <strong>trượt</strong>: −1 điểm.</td></tr>
+          <tr><td>QT-07</td><td>Điểm = max(0, điểm cũ + thay đổi). Trượt khi đang 0 điểm thì vẫn 0 (G4).</td></tr>
+          <tr><td>QT-08</td><td>Tại thời điểm 30000 ms: dừng sinh chuột, xóa chuột đang hiện, khóa lưới. Thao tác có dấu thời gian từ 30000 ms trở đi bị bỏ qua. Sau đó chuyển sang màn hình kết thúc.</td></tr>
+          <tr><td>QT-09</td><td>Chơi lại hủy mọi bộ đếm của lượt cũ trước khi tạo bộ đếm mới; không bao giờ có hai nhịp chạy cùng lúc.</td></tr>
+          <tr><td>QT-10</td><td>Cuối lượt: nếu điểm &gt; kỷ lục đã lưu <strong>và</strong> điểm &gt; 0 thì ghi kỷ lục mới và hiện “Kỷ lục mới!” (G5).</td></tr>
+          <tr><td>QT-11</td><td>Kỷ lục đọc khi mở trang và sau mỗi lượt; giá trị không hợp lệ coi như 0.</td></tr>
+          <tr><td>QT-12</td><td>Hiệu ứng trúng và trượt chạy độc lập với logic điểm; mất hiệu ứng không làm sai điểm.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="diem">
+      <h2>Bảng tính điểm</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Tình huống</th><th>Thay đổi điểm</th><th>Ghi chú</th></tr></thead>
+        <tbody>
+          <tr><td>Bấm trúng chuột đang hiện</td><td><span class="tag ok">+1</span></td><td>Chuột biến mất ngay.</td></tr>
+          <tr><td>Bấm vào ô trống</td><td><span class="tag">−1</span></td><td>Không xuống dưới 0.</td></tr>
+          <tr><td>Bấm lại vào ô vừa đập trúng trong 150 ms</td><td><span class="tag neutral">0</span></td><td>Bỏ qua, tránh phạt khi nhấp đúp (G3).</td></tr>
+          <tr><td>Bấm vào ô vừa đập trúng sau hơn 150 ms</td><td><span class="tag">−1</span></td><td>Ô đang trống nên tính là trượt.</td></tr>
+          <tr><td>Bấm vào ô đúng lúc chuột vừa tự biến mất</td><td><span class="tag">−1</span></td><td>Ô đã trống tại thời điểm nhấn.</td></tr>
+          <tr><td>Chuột tự biến mất, không ai bấm</td><td><span class="tag neutral">0</span></td><td>Không phạt.</td></tr>
+          <tr><td>Bấm sau khi hết giờ</td><td><span class="tag neutral">0</span></td><td>Lưới đã khóa.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Điểm tối đa = 30 (đập trúng cả 30 chuột và không trượt lần nào). Điểm thấp nhất = 0.</p>
+    </section>
+
+    <section id="trang-thai">
+      <h2>Dữ liệu trong lượt (chỉ nằm trong bộ nhớ)</h2>
+      <p>Mất khi tải lại trang; không lưu lại.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Trường</th><th>Kiểu</th><th>Giá trị / ý nghĩa</th></tr></thead>
+        <tbody>
+          <tr><td><code>phase</code></td><td>chuỗi</td><td><code>"idle"</code> (chờ), <code>"playing"</code> (đang chơi), <code>"over"</code> (kết thúc).</td></tr>
+          <tr><td><code>score</code></td><td>số nguyên</td><td>0 đến 30.</td></tr>
+          <tr><td><code>startedAt</code></td><td>số (ms)</td><td>Mốc thời gian thực lúc bắt đầu lượt.</td></tr>
+          <tr><td><code>activeCell</code></td><td>số nguyên hoặc rỗng</td><td>Chỉ số ô (0–8) đang có chuột; rỗng nếu không có.</td></tr>
+          <tr><td><code>lastCell</code></td><td>số nguyên hoặc rỗng</td><td>Ô của chuột trước, để chọn ô khác.</td></tr>
+          <tr><td><code>lastHitCell</code>, <code>lastHitAt</code></td><td>số</td><td>Ô và thời điểm đập trúng gần nhất, cho khoảng bỏ qua 150 ms.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Chỉ số ô: hàng trên 0, 1, 2; hàng giữa 3, 4, 5; hàng dưới 6, 7, 8.</p>
+    </section>
+
+    <section id="luu-tru">
+      <h2>Dữ liệu lưu lâu dài</h2>
+      <p>Chỉ <strong>một</strong> giá trị, lưu bằng <code>localStorage</code> của trình duyệt.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Khóa</th><th>Giá trị</th><th>Khi nào ghi</th></tr></thead>
+        <tbody>
+          <tr><td><code>dap-chuot:diem-cao-nhat</code></td><td>Số nguyên dạng chuỗi, từ 0 đến 30</td><td>Cuối lượt, khi QT-10 thỏa.</td></tr>
+        </tbody>
+      </table></div>
+      <ul>
+        <li><strong>Đọc:</strong> chuyển thành số nguyên; nếu thiếu, không phải số, âm hoặc lớn hơn 30 thì coi là 0.</li>
+        <li><strong>Lỗi lưu trữ:</strong> nếu <code>localStorage</code> bị chặn (cửa sổ riêng tư, tắt dữ liệu trang), bọc trong <code>try/catch</code>, game vẫn chơi bình thường và kỷ lục chỉ nhớ trong phiên hiện tại.</li>
+        <li><strong>Quyền riêng tư:</strong> không thu thập tên, email hay bất kỳ dữ liệu cá nhân nào; không gửi dữ liệu lên máy chủ.</li>
+        <li><strong>Xóa:</strong> người chơi xóa dữ liệu trang trong trình duyệt là mất kỷ lục.</li>
+      </ul>
+    </section>
+
+    <section id="bien">
+      <h2>Trường hợp biên</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Tình huống</th><th>Xử lý</th></tr></thead>
+        <tbody>
+          <tr><td>Chuyển sang tab khác giữa lượt rồi quay lại</td><td>Đồng hồ tính theo thời gian thực nên vẫn đúng. Nếu đã quá 30 giây thì kết thúc ngay khi quay lại; các chuột bị lỡ không tính điểm.</td></tr>
+          <tr><td>Bấm Bắt đầu hoặc Chơi lại nhiều lần liên tiếp</td><td>Chỉ có một lượt (QT-01, QT-09).</td></tr>
+          <tr><td>Nhiều ngón chạm cùng lúc</td><td>Mỗi ngón là một thao tác; một chuột chỉ cho tối đa 1 điểm.</td></tr>
+          <tr><td>Hết giờ đúng lúc người chơi bấm</td><td>Thao tác có thời điểm từ 30000 ms trở đi bị bỏ (QT-08).</td></tr>
+          <tr><td>Điểm bằng đúng kỷ lục</td><td>Không phá kỷ lục, không hiện “Kỷ lục mới!”.</td></tr>
+          <tr><td>Lượt 0 điểm, kỷ lục chưa có</td><td>Không ghi, không hiện “Kỷ lục mới!”; màn hình hiện kỷ lục 0.</td></tr>
+          <tr><td>Tải lại trang giữa lượt</td><td>Lượt bỏ, không lưu điểm, quay về màn hình bắt đầu.</td></tr>
+          <tr><td>Máy chậm, khung hình bị trễ</td><td>Chuột vẫn biến mất đúng 800 ms theo mốc thời gian thực, không kéo dài.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <nav class="pager" aria-label="Điều hướng"><a href="03-man-hinh.html">← 03 Màn hình</a><a href="05-ke-hoach-test.html">05 Kế hoạch test →</a></nav>
+  </main>
+</div>
+<footer class="site-foot"><div class="inner">Bộ tài liệu game Đập chuột · chỉ là đặc tả, chưa có code · giao diện theo <code>design/tokens.css</code></div></footer>
+</body>
+</html>

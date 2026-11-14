@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mục lục — Tài liệu game Đập chuột</title>
+<link rel="stylesheet" href="../design/tokens.css">
+<link rel="stylesheet" href="docs.css">
+<style>
+  .hero { background: var(--color-ink); color: var(--color-on-dark); }
+  .hero .inner { max-width: var(--container-max); margin: 0 auto; padding: var(--space-20) var(--gutter) var(--space-16); }
+  .hero h1 { color: var(--color-on-dark); font-size: var(--text-5xl); letter-spacing: var(--tracking-tight); }
+  .hero h1 span { color: var(--color-primary); }
+  .hero p { max-width: 58ch; margin-top: var(--space-4); font-size: var(--text-lg); font-weight: var(--weight-light); color: #D6D3DA; }
+  .hero .status { display: inline-block; margin-top: var(--space-6); background: var(--color-primary); color: var(--color-on-primary); font-weight: var(--weight-semibold); font-size: var(--text-sm); padding: 6px 16px; border-radius: var(--radius-pill); }
+  .content { max-width: var(--container-max); margin: 0 auto; padding: var(--space-16) var(--gutter); }
+  .content h2 { font-size: var(--text-2xl); text-transform: uppercase; letter-spacing: var(--tracking-wide); margin-bottom: var(--space-6); }
+  .content h2::after { content: ""; display: block; width: 48px; height: 4px; background: var(--color-primary); border-radius: var(--radius-pill); margin-top: var(--space-3); }
+  .content section { margin-bottom: var(--space-16); }
+  .doc-card { display: flex; flex-direction: column; gap: var(--space-2); min-height: 170px; }
+  .doc-card .no { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--color-primary); letter-spacing: var(--tracking-wide); }
+  .doc-card h3 { font-size: var(--text-xl); margin: 0; }
+  .doc-card p { margin: 0; font-size: var(--text-sm); }
+  .doc-card .go { margin-top: auto; color: var(--color-primary); font-weight: var(--weight-semibold); }
+  @media (max-width: 640px) { .hero h1 { font-size: var(--text-4xl); } }
+</style>
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html">Đập <span>chuột</span></a>
+  <nav>
+    <a href="index.html" aria-current="page">Mục lục</a>
+    <a href="01-tong-quan.html">01 Tổng quan</a>
+    <a href="02-chuc-nang.html">02 Chức năng</a>
+    <a href="03-man-hinh.html">03 Màn hình</a>
+    <a href="04-quy-tac-du-lieu.html">04 Quy tắc &amp; dữ liệu</a>
+    <a href="05-ke-hoach-test.html">05 Kế hoạch test</a>
+  </nav>
+</div></div>
+
+<header class="hero"><div class="inner">
+  <div class="eyebrow">Bộ tài liệu đặc tả</div>
+  <h1>Game <span>Đập chuột</span></h1>
+  <p>Lưới 3×3, mỗi lượt 30 giây. Đập trúng chuột được 1 điểm, bấm trượt bị trừ 1 điểm. Chạy trên trình duyệt, không cần cài đặt.</p>
+  <span class="status">Chỉ là đặc tả — chưa có code game</span>
+</div></header>
+
+<div class="content">
+  <section>
+    <h2>Các tài liệu</h2>
+    <div class="grid">
+      <a class="card doc-card" href="01-tong-quan.html"><span class="no">01</span><h3>Tổng quan</h3><p>Mục tiêu, quyết định đã chốt, phạm vi, thuật ngữ và các giả định cần xác nhận.</p><span class="go">Đọc →</span></a>
+      <a class="card doc-card" href="02-chuc-nang.html"><span class="no">02</span><h3>Chức năng</h3><p>9 chức năng (CN-01 đến CN-09) với mô tả, kết quả và tiêu chí chấp nhận.</p><span class="go">Đọc →</span></a>
+      <a class="card doc-card" href="03-man-hinh.html"><span class="no">03</span><h3>Màn hình</h3><p>3 màn hình: bắt đầu, chơi, kết thúc; khung phác, phản hồi và co giãn.</p><span class="go">Đọc →</span></a>
+      <a class="card doc-card" href="04-quy-tac-du-lieu.html"><span class="no">04</span><h3>Quy tắc &amp; dữ liệu</h3><p>Tham số, quy tắc chơi, bảng tính điểm, dữ liệu lưu và các trường hợp biên.</p><span class="go">Đọc →</span></a>
+      <a class="card doc-card" href="05-ke-hoach-test.html"><span class="no">05</span><h3>Kế hoạch test</h3><p>33 ca kiểm thử thủ công và danh sách tiêu chí hoàn thành.</p><span class="go">Đọc →</span></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Quyết định đã chốt</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Mã</th><th>Chủ đề</th><th>Quyết định</th></tr></thead>
+      <tbody>
+        <tr><td>Q1</td><td>Tốc độ chuột</td><td>Cố định: ở lại 800 ms, nghỉ 200 ms</td></tr>
+        <tr><td>Q2</td><td>Bấm trượt</td><td>Trừ 1 điểm, điểm không âm</td></tr>
+        <tr><td>Q3</td><td>Hình ảnh</td><td>Emoji 🐹 và 🕳️</td></tr>
+        <tr><td>Q4</td><td>Điểm cao nhất</td><td>1 kỷ lục lưu trên trình duyệt</td></tr>
+        <tr><td>Q5</td><td>Tạm dừng, âm thanh</td><td>Không có cả hai</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><p>Tài liệu này <strong>thay thế</strong> <code>YEU-CAU.md</code> ở điểm: bấm trượt nay bị trừ 1 điểm (trước đó không phạt).</p></div>
+  </section>
+
+  <section>
+    <h2>Liên quan</h2>
+    <ul>
+      <li><a href="../design/design-system.html">Design system</a>: màu, chữ, nút, ô nhập, thẻ; mọi giá trị nằm trong <code>design/tokens.css</code>.</li>
+      <li><code>YEU-CAU.md</code>: bản yêu cầu ban đầu, dùng làm gốc cho bộ tài liệu này.</li>
+    </ul>
+  </section>
+</div>
+<footer class="site-foot"><div class="inner">Bộ tài liệu game Đập chuột · chỉ là đặc tả, chưa có code · giao diện theo <code>design/tokens.css</code></div></footer>
+</body>
+</html>
