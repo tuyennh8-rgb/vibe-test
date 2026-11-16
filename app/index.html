@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đập chuột</title>
+<link rel="stylesheet" href="../design/tokens.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="app">
+
+  <!-- M1 · Màn hình bắt đầu -->
+  <section id="screen-start" class="screen" aria-labelledby="start-title">
+    <h1 id="start-title" class="title" tabindex="-1">Đập <span>chuột</span></h1>
+    <p class="hint">Đập chuột trong 30 giây.<br>Trúng +1 điểm, trượt −1 điểm.</p>
+    <p class="best">Kỷ lục: <b id="best-start">0</b></p>
+    <button id="btn-start" class="btn btn-primary btn-lg" type="button">Bắt đầu</button>
+  </section>
+
+  <!-- M2 · Màn hình chơi -->
+  <section id="screen-play" class="screen" aria-label="Đang chơi" hidden>
+    <div class="hud">
+      <div class="stat"><span class="stat-label">Điểm</span><b id="score" class="stat-value">0</b></div>
+      <div class="stat"><span class="stat-label">Thời gian</span><b id="time" class="stat-value">30</b></div>
+    </div>
+    <div id="grid" class="grid" role="group" aria-label="Lưới 3×3">
+      <button type="button" class="cell" data-index="0">🕳️</button>
+      <button type="button" class="cell" data-index="1">🕳️</button>
+      <button type="button" class="cell" data-index="2">🕳️</button>
+      <button type="button" class="cell" data-index="3">🕳️</button>
+      <button type="button" class="cell" data-index="4">🕳️</button>
+      <button type="button" class="cell" data-index="5">🕳️</button>
+      <button type="button" class="cell" data-index="6">🕳️</button>
+      <button type="button" class="cell" data-index="7">🕳️</button>
+      <button type="button" class="cell" data-index="8">🕳️</button>
+    </div>
+  </section>
+
+  <!-- M3 · Màn hình kết thúc -->
+  <section id="screen-over" class="screen" aria-labelledby="over-title" hidden>
+    <h2 id="over-title" class="title title-sm" tabindex="-1">Hết giờ!</h2>
+    <p class="hint">Điểm của bạn</p>
+    <div id="final-score" class="final-score">0</div>
+    <span id="new-badge" class="badge" hidden>Kỷ lục mới!</span>
+    <p class="best">Kỷ lục: <b id="best-over">0</b></p>
+    <button id="btn-again" class="btn btn-primary btn-lg" type="button">Chơi lại</button>
+  </section>
+
+  <noscript><p class="hint">Game cần bật JavaScript để chơi.</p></noscript>
+</main>
+<script src="game.js"></script>
+</body>
+</html>

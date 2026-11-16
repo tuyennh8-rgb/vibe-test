@@ -2,6 +2,8 @@
 
 Trạng thái: **chỉ là đặc tả, chưa có code.**
 
+Bản chi tiết hơn nằm trong thư mục [docs/](docs/index.html) (tổng quan, chức năng, màn hình, quy tắc dữ liệu, kế hoạch test). Khi hai nơi khác nhau thì `docs/` là bản mới nhất; file này đã được cập nhật cho khớp.
+
 ## 1. Tổng quan
 
 Game đập chuột chạy trên trình duyệt (desktop và mobile). Người chơi có 30 giây để bấm vào những con chuột xuất hiện ngẫu nhiên trên lưới 3×3 và ghi càng nhiều điểm càng tốt.
@@ -17,7 +19,7 @@ Game đập chuột chạy trên trình duyệt (desktop và mobile). Người c
 4. Chuột ở lại ô trong một khoảng thời gian ngắn rồi tự biến mất. Sau đó chuột mới xuất hiện ở ô khác.
    - Ô mới được chọn ngẫu nhiên, **khác ô trước đó**.
    - Thời gian chuột ở lại: **800 ms**; nghỉ giữa hai con: **200 ms**. (Cố định, không tăng độ khó trong bản đầu.)
-5. Người chơi bấm (click hoặc chạm) vào ô đang có chuột để đập.
+5. Người chơi bấm (click hoặc chạm) vào ô đang có chuột để đập. Bấm vào ô trống là **bấm trượt** và bị trừ điểm (xem mục 3).
 6. Hết 30 giây, lượt chơi kết thúc ngay: chuột biến mất, mọi thao tác bấm vào lưới bị bỏ qua, hiện màn hình kết quả.
 7. Có thể bấm **Chơi lại** để bắt đầu lượt mới; điểm và đồng hồ được đặt lại.
 
@@ -26,14 +28,15 @@ Game đập chuột chạy trên trình duyệt (desktop và mobile). Người c
 | Tình huống | Điểm |
 |---|---|
 | Bấm trúng ô đang có chuột | **+1** |
-| Bấm vào ô trống | 0 (không phạt) |
-| Bấm lại vào chuột đã bị đập | 0 |
+| Bấm vào ô trống (bấm trượt) | **−1** |
+| Bấm lại vào ô vừa đập trúng trong vòng 150 ms (nhấp đúp) | 0 (bỏ qua) |
+| Bấm vào ô vừa đập trúng sau hơn 150 ms | −1 (ô đang trống nên tính là trượt) |
 | Chuột tự biến mất mà chưa bị đập | 0 |
 
 - Mỗi con chuột chỉ tính điểm **tối đa 1 lần**. Sau khi bị đập, chuột biến mất ngay.
-- Điểm không bao giờ âm.
+- Điểm không bao giờ âm: bấm trượt khi đang 0 điểm thì vẫn là 0.
 - Điểm tối đa lý thuyết: 30 s ÷ (0,8 s + 0,2 s) = **30 điểm** (nếu đập trúng mọi con chuột).
-- **Điểm cao nhất** được lưu trên trình duyệt (`localStorage`) và hiển thị ở các màn hình. Nếu `localStorage` không dùng được thì game vẫn chơi bình thường, chỉ không lưu kỷ lục.
+- **Điểm cao nhất**: chỉ lưu 1 kỷ lục trên trình duyệt (`localStorage`) và hiển thị ở màn hình bắt đầu và kết thúc. Nếu `localStorage` không dùng được thì game vẫn chơi bình thường, chỉ không lưu kỷ lục. Lượt 0 điểm không ghi kỷ lục.
 
 ## 4. Màn hình
 
@@ -47,7 +50,8 @@ Game đập chuột chạy trên trình duyệt (desktop và mobile). Người c
 - Thanh thông tin phía trên: **Điểm** hiện tại và **Thời gian còn lại** (giây, đếm ngược từ 30).
 - Lưới 3×3 ở giữa; các ô là hình vuông, cùng kích thước, có khoảng cách đều nhau.
 - Chuột hiển thị là hình/emoji 🐹 trong ô; ô trống chỉ là cái hang.
-- Phản hồi khi bấm: đập trúng → chuột biến mất ngay và điểm tăng (có hiệu ứng nhẹ, ví dụ nháy sáng); bấm trượt → không có phản hồi đặc biệt.
+- Phản hồi khi bấm: đập trúng → chuột biến mất ngay, điểm tăng, ô nháy sáng nhẹ; bấm trượt → ô nháy viền đỏ, điểm giảm 1. Mỗi hiệu ứng dưới 300 ms.
+- Không có nút tạm dừng và không có âm thanh.
 - Bố cục co giãn theo màn hình: không cuộn trang, lưới nằm trọn trong khung nhìn từ chiều rộng 320 px trở lên; ô đủ lớn để chạm bằng ngón tay (tối thiểu 64 px).
 
 ### 4.3. Màn hình kết thúc
@@ -73,7 +77,7 @@ Màn hình bắt đầu --[Bắt đầu]--> Màn hình chơi --[hết 30 s]--> M
 
 ## 6. Ngoài phạm vi (bản đầu)
 
-Âm thanh, nhiều mức độ khó, chuột tăng tốc, điểm trừ, bảng xếp hạng online, chế độ nhiều người chơi, tạm dừng giữa lượt.
+Âm thanh, nhiều mức độ khó, chuột tăng tốc, bảng xếp hạng online, chế độ nhiều người chơi, tạm dừng giữa lượt.
 
 ## 7. Tiêu chí hoàn thành
 
@@ -84,7 +88,7 @@ Game được coi là xong khi **tất cả** các mục sau đều đạt:
 - [ ] Bấm **Bắt đầu** thì đồng hồ chạy từ 30 và giảm đều mỗi giây về 0.
 - [ ] Tại mọi thời điểm có tối đa 1 chuột, xuất hiện ngẫu nhiên và không lặp lại ô liền trước.
 - [ ] Bấm trúng chuột: +1 điểm, chuột biến mất ngay; bấm trúng cùng một con chuột nhiều lần chỉ tính 1 điểm.
-- [ ] Bấm ô trống hoặc chuột đã biến mất: điểm không đổi.
+- [ ] Bấm ô trống: −1 điểm, điểm không xuống dưới 0. Chuột tự biến mất mà không bị bấm thì điểm không đổi.
 - [ ] Đến 0 giây lượt chơi dừng, chuột biến mất, bấm vào lưới không còn tăng điểm.
 - [ ] Màn hình kết thúc hiển thị đúng điểm lượt vừa chơi và điểm cao nhất.
 - [ ] **Chơi lại** đặt lại điểm về 0 và đồng hồ về 30; không còn bộ đếm cũ chạy ngầm (bấm Chơi lại liên tục không làm đồng hồ chạy nhanh).
@@ -92,10 +96,16 @@ Game được coi là xong khi **tất cả** các mục sau đều đạt:
 - [ ] Dùng được trên điện thoại (chiều rộng 320 px trở lên), chạm vào ô hoạt động đúng, không bị zoom hay cuộn ngoài ý muốn.
 - [ ] Không có lỗi trong console khi chơi trọn một lượt.
 
-## 8. Câu hỏi còn mở
+## 8. Quyết định đã chốt
 
-Các giá trị dưới đây là giả định để chốt đặc tả; có thể đổi trước khi làm:
+Kết quả phỏng vấn làm rõ ý tưởng game:
 
-- Thời gian chuột ở lại 800 ms và nghỉ 200 ms.
-- Có phạt điểm khi bấm trượt hay không (hiện tại: không).
-- Giao diện dùng emoji hay ảnh/hình vẽ riêng cho chuột và hang.
+| Mã | Nội dung | Quyết định |
+|---|---|---|
+| Q1 | Tốc độ chuột | Cố định: ở lại 800 ms, nghỉ 200 ms |
+| Q2 | Bấm trượt | Trừ 1 điểm, điểm không âm |
+| Q3 | Hình ảnh | Emoji 🐹 (chuột) và 🕳️ (hang) |
+| Q4 | Điểm cao nhất | 1 kỷ lục lưu trên trình duyệt |
+| Q5 | Tạm dừng, âm thanh | Không có cả hai |
+
+Các điểm tự đặt, cần bạn xác nhận (xem `docs/01-tong-quan.html`): chuột mới luôn ở ô khác ô trước; nhịp 1000 ms không đổi nên điểm tối đa là 30; bấm lại trong 150 ms vào ô vừa đập trúng được bỏ qua.
