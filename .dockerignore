@@ -1,0 +1,15 @@
+# Không đưa vào ảnh Docker
+.git
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+docs
+*.md
+.DS_Store
+node_modules
+npm-debug.log*
+*.log
+.env
+.env.*
+.claude

@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Log và biến môi trường (có thể chứa bí mật)
+*.log
+.env
+.env.*
+!.env.example
