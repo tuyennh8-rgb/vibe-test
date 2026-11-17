@@ -35,6 +35,7 @@
     <li><a href="#phan-hoi">Phản hồi &amp; trạng thái</a></li>
     <li><a href="#responsive">Co giãn màn hình</a></li>
     <li><a href="#phong-cach">Áp dụng design system</a></li>
+    <li><a href="#mo-rong">Mở rộng: đăng ký &amp; admin</a></li>
   </ul></aside>
 
   <main>
@@ -158,6 +159,170 @@
           <tr><td>Ô trượt</td><td>Viền <code>--color-danger</code></td></tr>
           <tr><td>Điểm, đồng hồ</td><td><code>--text-2xl</code> đến <code>--text-5xl</code>, <code>--weight-bold</code>, màu <code>--color-primary</code></td></tr>
           <tr><td>Khoảng cách</td><td>Thang <code>--space-*</code> (nhịp 4 px)</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="mo-rong">
+      <h2>Mở rộng: đăng ký người chơi và trang admin</h2>
+      <div class="callout">
+        <p><strong>Phần bổ sung, không thay nội dung cũ.</strong> M1, M2, M3 giữ nguyên bố cục; chỉ thêm dòng chào tên người chơi ở M1. Thêm màn hình <strong>M4</strong> (đăng ký) và khu vực admin <strong>A1, A2, A3</strong>. <strong>Chưa viết code.</strong></p>
+      </div>
+
+      <h3>Luồng màn hình</h3>
+      <div class="flow">
+        <div class="node active"><b>M4 Đăng ký</b>mở trang</div><div class="arrow">→</div>
+        <div class="node"><b>M1 Bắt đầu</b>đăng ký xong</div><div class="arrow">→</div>
+        <div class="node"><b>M2 Chơi</b>bấm Bắt đầu</div><div class="arrow">→</div>
+        <div class="node"><b>M3 Kết thúc</b>hết 30 giây</div><div class="arrow">↺</div>
+        <div class="node"><b>M2 Chơi</b>bấm Chơi lại</div>
+      </div>
+      <div class="flow">
+        <div class="node"><b>/admin</b>mở trang admin</div><div class="arrow">→</div>
+        <div class="node active"><b>A1 Đăng nhập</b>chưa có phiên</div><div class="arrow">→</div>
+        <div class="node"><b>A2 Danh sách</b>đăng nhập đúng</div><div class="arrow">→</div>
+        <div class="node"><b>A3 Xác nhận xoá</b>bấm Xoá một dòng</div>
+      </div>
+
+      <h3>M4 · Màn hình đăng ký</h3>
+      <div class="screens">
+        <div>
+          <div class="phone">
+            <div class="w-title">Đăng ký <span>chơi</span></div>
+            <div class="w-field"><label>Họ và tên</label><span class="box">Nguyễn Văn A</span></div>
+            <div class="w-field"><label>Email</label><span class="box">ban@congty.vn</span></div>
+            <div class="w-field err"><label>Số điện thoại</label><span class="box">0912</span><span class="w-err">Số điện thoại không hợp lệ.</span></div>
+            <div class="w-check"><i></i><span>Tôi đồng ý cho lưu thông tin này để liên hệ.</span></div>
+            <div class="w-btn">Tiếp tục</div>
+          </div>
+          <p class="caption"><strong>M4</strong> · Đăng ký (đang có lỗi ở một ô)</p>
+        </div>
+        <div>
+          <div class="phone">
+            <div class="w-title">Đập <span>chuột</span></div>
+            <div class="w-note">Xin chào, <b>Nguyễn Văn A</b></div>
+            <div class="w-note">Đập chuột trong 30 giây.<br>Trúng +1 điểm, trượt −1 điểm.</div>
+            <div class="w-note">Kỷ lục: <b>18</b></div>
+            <div class="w-btn">Bắt đầu</div>
+          </div>
+          <p class="caption"><strong>M1</strong> · Bắt đầu (thêm dòng chào)</p>
+        </div>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Thành phần</th><th>Nội dung / hành vi</th><th>Chức năng</th></tr></thead>
+        <tbody>
+          <tr><td>Tiêu đề</td><td>“Đăng ký chơi”, chữ “chơi” màu primary.</td><td>CN-10</td></tr>
+          <tr><td>Ô Họ và tên</td><td>Nhãn “Họ và tên”, gợi ý “Nguyễn Văn A”. Tối đa 100 ký tự.</td><td>CN-10</td></tr>
+          <tr><td>Ô Email</td><td>Nhãn “Email”, gợi ý “ban@congty.vn”, bàn phím email trên điện thoại.</td><td>CN-10</td></tr>
+          <tr><td>Ô Số điện thoại</td><td>Nhãn “Số điện thoại”, gợi ý “0912 345 678”, bàn phím số trên điện thoại.</td><td>CN-10</td></tr>
+          <tr><td>Hộp tick đồng ý</td><td>“Tôi đồng ý cho lưu thông tin này để liên hệ.” Bắt buộc tick (G7).</td><td>CN-10</td></tr>
+          <tr><td>Nút Tiếp tục</td><td>Nút chính, đặt giữa. Đang gửi thì khoá và đổi chữ thành “Đang gửi…”.</td><td>CN-10, CN-11</td></tr>
+          <tr><td>Dòng chào ở M1</td><td>“Xin chào, {họ tên}” phía trên hướng dẫn. Không có nút đổi người chơi; muốn đổi thì tải lại trang.</td><td>CN-12</td></tr>
+        </tbody>
+      </table></div>
+      <h3>Thông báo của M4</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Tình huống</th><th>Thông báo (hiện dưới ô, màu danger)</th></tr></thead>
+        <tbody>
+          <tr><td>Họ tên trống hoặc ngoài 2 đến 100 ký tự</td><td>“Vui lòng nhập họ và tên (2 đến 100 ký tự).”</td></tr>
+          <tr><td>Email sai định dạng</td><td>“Email không hợp lệ.”</td></tr>
+          <tr><td>Số điện thoại sai</td><td>“Số điện thoại không hợp lệ. Ví dụ: 0912 345 678.”</td></tr>
+          <tr><td>Chưa tick đồng ý</td><td>“Bạn cần đồng ý để tiếp tục.”</td></tr>
+          <tr><td>Không gọi được máy chủ hoặc máy chủ lỗi</td><td>“Không thể đăng ký lúc này. Vui lòng thử lại.” (hiện phía trên nút; dữ liệu đã nhập giữ nguyên; không cho vào chơi)</td></tr>
+          <tr><td>Gửi quá nhiều lần (bị giới hạn)</td><td>“Bạn thao tác quá nhanh. Vui lòng đợi một chút rồi thử lại.”</td></tr>
+        </tbody>
+      </table></div>
+      <ul>
+        <li>Kiểm tra từng ô khi người chơi rời ô, và kiểm tra lại toàn bộ khi bấm Tiếp tục. Ô sai đầu tiên được đưa con trỏ tới.</li>
+        <li>Mỗi ô có nhãn đi kèm (không chỉ dùng chữ gợi ý), lỗi gắn với ô bằng thuộc tính truy cập để trình đọc màn hình đọc được.</li>
+        <li>Nhấn <kbd>Enter</kbd> trong ô nhập tương đương bấm Tiếp tục.</li>
+      </ul>
+
+      <h3>A1 · Đăng nhập admin</h3>
+      <div class="desk">
+        <div class="desk-title">/admin · A1 Đăng nhập</div>
+        <div style="max-width:320px">
+          <p><strong>Đăng nhập quản trị</strong></p>
+          <div class="bar"><div class="grow">Tên đăng nhập</div></div>
+          <div class="bar"><div class="grow">Mật khẩu</div></div>
+          <p class="note" style="color:var(--color-danger)">Sai tên đăng nhập hoặc mật khẩu.</p>
+          <span class="pill-btn">Đăng nhập</span>
+        </div>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Thành phần</th><th>Nội dung / hành vi</th></tr></thead>
+        <tbody>
+          <tr><td>Hai ô nhập</td><td>“Tên đăng nhập” và “Mật khẩu” (ký tự che đi). Trình duyệt được phép gợi ý lưu mật khẩu.</td></tr>
+          <tr><td>Nút Đăng nhập</td><td>Đang gửi thì khoá. Đúng thì chuyển sang A2.</td></tr>
+          <tr><td>Sai tên hoặc mật khẩu</td><td>Luôn cùng một thông báo: “Sai tên đăng nhập hoặc mật khẩu.” (không cho biết sai ô nào).</td></tr>
+          <tr><td>Bị tạm khoá</td><td>“Thử sai quá nhiều lần. Vui lòng đợi 15 phút.”</td></tr>
+          <tr><td>Hết phiên</td><td>Quay về A1 kèm dòng “Phiên đăng nhập đã hết hạn.”</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>A2 · Danh sách người chơi</h3>
+      <div class="desk">
+        <div class="desk-title">/admin · A2 Danh sách</div>
+        <div class="bar">
+          <strong>Người chơi (125)</strong>
+          <div class="grow">Tìm theo tên, email, số điện thoại…</div>
+          <span class="pill-btn alt">Xuất CSV</span>
+          <span class="pill-btn alt">Đăng xuất</span>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Họ và tên</th><th>Email</th><th>Số điện thoại</th><th>Ngày đăng ký</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>Nguyễn Văn A</td><td>a@congty.vn</td><td>0912 345 678</td><td>16/11/2026 10:21</td><td>Xoá</td></tr>
+            <tr><td>Trần Thị B</td><td>b@mail.com</td><td>0987 654 321</td><td>16/11/2026 09:05</td><td>Xoá</td></tr>
+            <tr><td>Lê Văn C</td><td>c@mail.com</td><td>0377 111 222</td><td>15/11/2026 17:40</td><td>Xoá</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">Trang 1 / 7 · ← Trước · Sau →</p>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Thành phần</th><th>Nội dung / hành vi</th><th>Chức năng</th></tr></thead>
+        <tbody>
+          <tr><td>Tiêu đề và tổng số</td><td>“Người chơi (N)”; N là số kết quả theo bộ lọc hiện tại.</td><td>CN-14</td></tr>
+          <tr><td>Ô tìm kiếm</td><td>Lọc sau khi người dùng ngừng gõ khoảng nửa giây, hoặc nhấn Enter. Có nút xoá nội dung ô.</td><td>CN-15</td></tr>
+          <tr><td>Nút Xuất CSV</td><td>Tải file CSV của danh sách đang lọc.</td><td>CN-17</td></tr>
+          <tr><td>Nút Đăng xuất</td><td>Kết thúc phiên, về A1.</td><td>CN-13</td></tr>
+          <tr><td>Bảng</td><td>5 cột như phác thảo, người mới nhất ở trên cùng. Ngày giờ theo giờ Việt Nam. Nội dung được hiển thị nguyên văn (không chạy mã).</td><td>CN-14</td></tr>
+          <tr><td>Nút Xoá mỗi dòng</td><td>Mở hộp xác nhận A3.</td><td>CN-16</td></tr>
+          <tr><td>Phân trang</td><td>20 dòng mỗi trang; nút Trước, Sau; hiện “Trang x / y”.</td><td>CN-14</td></tr>
+          <tr><td>Danh sách trống</td><td>“Chưa có người chơi nào.”</td><td>CN-14</td></tr>
+          <tr><td>Tìm không có kết quả</td><td>“Không tìm thấy kết quả cho “{chuỗi tìm}”.”</td><td>CN-15</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>A3 · Hộp xác nhận xoá</h3>
+      <div class="desk" style="max-width:420px">
+        <div class="desk-title">A3 Xác nhận xoá</div>
+        <p><strong>Xoá người chơi Nguyễn Văn A?</strong></p>
+        <p class="note">Thao tác này không thể hoàn tác.</p>
+        <div class="bar"><span class="pill-btn alt">Huỷ</span><span class="pill-btn">Xoá</span></div>
+      </div>
+      <ul>
+        <li>Hộp thoại chặn thao tác phía sau; nhấn <kbd>Esc</kbd> hoặc bấm Huỷ để đóng. Con trỏ mặc định ở nút Huỷ.</li>
+        <li>Xoá thành công: dòng biến mất, tổng số giảm 1. Nếu đó là dòng cuối của trang thì trở về trang trước.</li>
+        <li>Xoá lỗi: giữ nguyên danh sách và hiện “Không thể xoá. Vui lòng thử lại.”</li>
+      </ul>
+
+      <h3>Co giãn và truy cập</h3>
+      <ul>
+        <li><strong>M4</strong> theo quy tắc của M1 đến M3: dùng được từ 320 px, các ô nhập cao tối thiểu 44 px, nút Tiếp tục dễ chạm.</li>
+        <li><strong>Admin</strong> ưu tiên máy tính. Trên màn hình hẹp, bảng cuộn ngang bên trong khung của nó, không làm cả trang cuộn ngang.</li>
+        <li>Mọi nút và ô nhập thao tác được bằng bàn phím, có vòng focus rõ.</li>
+      </ul>
+
+      <h3>Áp dụng design system</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Phần tử</th><th>Token dùng</th></tr></thead>
+        <tbody>
+          <tr><td>Ô nhập</td><td>Kiểu đường kẻ dưới như <code>design-system.html</code>: <code>--color-border-strong</code>, focus <code>--color-primary</code>, lỗi <code>--color-danger</code></td></tr>
+          <tr><td>Nút Tiếp tục, Đăng nhập, Xoá</td><td>Nút primary (<code>--radius-pill</code>, <code>--shadow-primary</code>); Huỷ, Xuất CSV, Đăng xuất dùng nút viền</td></tr>
+          <tr><td>Bảng admin</td><td><code>--color-surface-alt</code> cho hàng tiêu đề, <code>--color-border</code> cho đường kẻ, <code>--text-sm</code></td></tr>
+          <tr><td>Hộp xác nhận</td><td><code>--radius-xl</code>, <code>--shadow-lg</code>, nền <code>--color-surface</code></td></tr>
+          <tr><td>Thông báo lỗi</td><td><code>--color-danger</code>, <code>--text-xs</code></td></tr>
         </tbody>
       </table></div>
     </section>

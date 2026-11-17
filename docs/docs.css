@@ -120,3 +120,19 @@ a.card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
 .check { list-style: none; padding: 0; }
 .check li { position: relative; padding-left: 32px; }
 .check li::before { content: ""; position: absolute; left: 0; top: 4px; width: 18px; height: 18px; border: 2px solid var(--color-primary); border-radius: var(--radius-sm); }
+
+/* Bổ sung: khung phác form đăng ký và trang admin */
+.phone .w-field { text-align: left; display: flex; flex-direction: column; gap: 4px; font-size: var(--text-xs); font-weight: var(--weight-semibold); color: var(--color-ink); }
+.phone .w-field .box { display: block; border-bottom: 1px solid var(--color-border-strong); padding: 6px 0; font-weight: var(--weight-regular); color: var(--color-text-muted); font-size: var(--text-sm); }
+.phone .w-field.err .box { border-bottom-color: var(--color-danger); }
+.phone .w-err { color: var(--color-danger); font-size: var(--text-xs); font-weight: var(--weight-regular); }
+.phone .w-check { text-align: left; font-size: var(--text-xs); display: flex; gap: var(--space-2); align-items: flex-start; }
+.phone .w-check i { flex: none; width: 14px; height: 14px; border: 2px solid var(--color-primary); border-radius: var(--radius-sm); margin-top: 2px; }
+.desk { border: 2px solid var(--color-ink); border-radius: var(--radius-lg); padding: var(--space-5); background: var(--color-surface); box-shadow: var(--shadow-md); margin-bottom: var(--space-6); font-size: var(--text-sm); }
+.desk-title { font-size: var(--text-xs); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--color-primary); margin-bottom: var(--space-3); }
+.desk .bar { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; margin-bottom: var(--space-4); }
+.desk .bar .grow { flex: 1; min-width: 140px; border-bottom: 1px solid var(--color-border-strong); padding: 6px 0; color: var(--color-text-muted); }
+.desk .pill-btn { background: var(--color-primary); color: var(--color-on-primary); border-radius: var(--radius-pill); padding: 6px 16px; font-weight: var(--weight-semibold); white-space: nowrap; }
+.desk .pill-btn.alt { background: transparent; color: var(--color-ink); border: 2px solid var(--color-ink); padding: 4px 14px; }
+.desk .table-wrap { margin-bottom: var(--space-3); }
+.desk .note { font-size: var(--text-xs); }

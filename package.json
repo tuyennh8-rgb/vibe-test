@@ -1,0 +1,16 @@
+{
+  "name": "dap-chuot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Game Đập chuột: đăng ký người chơi, trang admin, PostgreSQL",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "pg": "^8.13.0"
+  }
+}

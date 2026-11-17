@@ -35,6 +35,7 @@
     <li><a href="#luu">Lưu kỷ lục</a></li>
     <li><a href="#tuong-thich">Tương thích</a></li>
     <li><a href="#hoan-thanh">Tiêu chí hoàn thành</a></li>
+    <li><a href="#mo-rong">Mở rộng: đăng ký &amp; admin</a></li>
   </ul></aside>
 
   <main>
@@ -140,6 +141,121 @@
         <li>Kỷ lục lưu và hiện đúng, còn sau khi tải lại; hỏng bộ nhớ trình duyệt thì game vẫn chạy.</li>
         <li>Dùng được trên điện thoại từ 320 px, thao tác chạm đúng, phản hồi dưới 100 ms.</li>
         <li>Giao diện dùng đúng token của <code>design/tokens.css</code>; không có lỗi trong console.</li>
+      </ul>
+    </section>
+
+    <section id="mo-rong">
+      <h2>Mở rộng: đăng ký người chơi và trang admin</h2>
+      <div class="callout">
+        <p><strong>Phần bổ sung, không thay nội dung cũ.</strong> TC-01 đến TC-33 và 9 mục “Tiêu chí hoàn thành” ở trên giữ nguyên. Từ nay mọi ca cũ <strong>bắt đầu sau khi đã đăng ký thành công</strong> (xem TC-84). <strong>Chưa viết code.</strong></p>
+      </div>
+      <h3>Môi trường test mới</h3>
+      <ul>
+        <li>Chạy bằng Docker Compose với file <code>.env</code> thử nghiệm (tài khoản admin và <code>SESSION_SECRET</code> dành cho test). Có thể giảm <code>SESSION_TTL_HOURS</code> khi cần thử hết phiên.</li>
+        <li>Trình duyệt: như bảng ở trên, thêm Excel hoặc Numbers để mở file CSV.</li>
+        <li>Công cụ: <code>curl</code> để gọi thẳng API, và công cụ dành cho nhà phát triển (Network, Cookies).</li>
+        <li>Mỗi nhóm test bắt đầu từ database trống, trừ khi ca ghi khác.</li>
+      </ul>
+
+      <h3>Đăng ký người chơi (CN-10, CN-11, CN-12)</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Tham chiếu</th></tr></thead>
+        <tbody>
+          <tr><td>TC-34</td><td>Mở trang lần đầu.</td><td>Hiện màn hình đăng ký M4; chưa thấy lưới hay nút Bắt đầu.</td><td>CN-10, QT-13</td></tr>
+          <tr><td>TC-35</td><td>Nhập họ tên, email, số điện thoại hợp lệ, tick đồng ý, bấm Tiếp tục.</td><td>Sang M1 có dòng “Xin chào, {họ tên}”; có đúng 1 bản ghi trong database.</td><td>CN-10, CN-11</td></tr>
+          <tr><td>TC-36</td><td>Lần lượt để trống từng ô rồi bấm Tiếp tục.</td><td>Lỗi hiện đúng dưới ô trống với đúng thông báo; không gửi lên máy chủ; dữ liệu đã nhập còn nguyên.</td><td>CN-10</td></tr>
+          <tr><td>TC-37</td><td>Họ tên: 1 ký tự; 101 ký tự; “12345”; “   An   ”.</td><td>3 trường hợp đầu báo lỗi; trường hợp cuối được chấp nhận và lưu là “An” (đã cắt khoảng trắng thừa, đủ 2 ký tự).</td><td>QT-14</td></tr>
+          <tr><td>TC-38</td><td>Email: “abc”, “a@b”, “a b@c.vn”, “a@b.c” rồi “Ban@Congty.VN”.</td><td>Các giá trị sai báo “Email không hợp lệ.”; giá trị cuối được chấp nhận và lưu là <code>ban@congty.vn</code>.</td><td>QT-15</td></tr>
+          <tr><td>TC-39</td><td>Số điện thoại sai: “12345”, “0212345678”, “091234567”, “abc”.</td><td>Đều báo lỗi.</td><td>QT-16</td></tr>
+          <tr><td>TC-40</td><td>Số điện thoại đúng ở các dạng: “0912345678”, “0912 345 678”, “0912.345.678”, “0912-345-678”, “+84912345678”, “84912345678”.</td><td>Đều được chấp nhận và lưu đúng một dạng <code>0912345678</code>.</td><td>QT-16</td></tr>
+          <tr><td>TC-41</td><td>Không tick đồng ý, bấm Tiếp tục.</td><td>“Bạn cần đồng ý để tiếp tục.”; không gửi; bản ghi có <code>consent_at</code> khi đã tick.</td><td>QT-17</td></tr>
+          <tr><td>TC-42</td><td>Đăng ký, rồi tải lại trang và đăng ký lại cùng email nhưng khác họ tên và số điện thoại.</td><td>Vẫn đúng 1 bản ghi; họ tên và số điện thoại là giá trị mới; <code>created_at</code> giữ nguyên, <code>updated_at</code> đổi; vào chơi được.</td><td>CN-11, QT-18</td></tr>
+          <tr><td>TC-43</td><td>Bấm Tiếp tục 5 lần liên tiếp rất nhanh.</td><td>Chỉ 1 yêu cầu được gửi, 1 bản ghi, chuyển sang M1 một lần.</td><td>CN-10</td></tr>
+          <tr><td>TC-44</td><td>Tắt dịch vụ (<code>docker compose stop</code>), đăng ký.</td><td>“Không thể đăng ký lúc này. Vui lòng thử lại.”; không vào chơi; dữ liệu đã nhập còn nguyên.</td><td>G9</td></tr>
+          <tr><td>TC-45</td><td>Đăng ký, chơi hết một lượt, bấm Chơi lại 3 lần.</td><td>Không bị hỏi lại thông tin; database vẫn 1 bản ghi.</td><td>CN-12</td></tr>
+          <tr><td>TC-46</td><td>Đang ở M1 hoặc M2, tải lại trang.</td><td>Về M4, các ô trống; không còn thông tin cũ trong trình duyệt.</td><td>G8</td></tr>
+          <tr><td>TC-47</td><td>Dùng <code>curl</code> gửi thẳng <code>POST /api/players</code> với dữ liệu sai (email hỏng, thiếu đồng ý, số điện thoại sai).</td><td>400 kèm lỗi từng trường; không có bản ghi nào được tạo.</td><td>CN-11</td></tr>
+          <tr><td>TC-48</td><td>Dùng <code>curl</code> gửi hơn 20 yêu cầu đăng ký trong 1 phút.</td><td>Các yêu cầu vượt mức nhận 429; quay lại bình thường sau 1 phút.</td><td>G15</td></tr>
+          <tr><td>TC-49</td><td>Đăng ký bằng họ tên có dấu tiếng Việt, ví dụ “Nguyễn Thị Hồng Ánh”.</td><td>Lưu và hiển thị đúng dấu ở admin và trong CSV.</td><td>CN-11</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Đăng nhập admin (CN-13)</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Tham chiếu</th></tr></thead>
+        <tbody>
+          <tr><td>TC-50</td><td>Mở <code>/admin</code> khi chưa đăng nhập.</td><td>Hiện A1, không thấy dữ liệu người chơi.</td><td>CN-13</td></tr>
+          <tr><td>TC-51</td><td>Đăng nhập đúng tên và mật khẩu trong <code>.env</code>.</td><td>Vào A2, thấy danh sách.</td><td>CN-13, QT-19</td></tr>
+          <tr><td>TC-52</td><td>Đăng nhập sai mật khẩu; sai tên; sai cả hai.</td><td>Ba trường hợp cùng một thông báo “Sai tên đăng nhập hoặc mật khẩu.”.</td><td>QT-19</td></tr>
+          <tr><td>TC-53</td><td>Đăng nhập sai 5 lần liên tiếp rồi lần thứ 6 (đúng mật khẩu).</td><td>Lần thứ 6 vẫn bị chặn: “Thử sai quá nhiều lần. Vui lòng đợi 15 phút.” (429).</td><td>QT-20</td></tr>
+          <tr><td>TC-54</td><td>Dùng <code>curl</code> gọi danh sách, xoá và xuất CSV khi không có cookie.</td><td>Cả ba trả 401, không rò rỉ dữ liệu.</td><td>CN-13</td></tr>
+          <tr><td>TC-55</td><td>Bấm Đăng xuất, rồi dùng nút Quay lại của trình duyệt.</td><td>Về A1; không xem lại được danh sách từ bộ nhớ đệm; API trả 401.</td><td>CN-13, QT-25</td></tr>
+          <tr><td>TC-56</td><td>Sau khi đăng nhập, xem cookie phiên trong công cụ nhà phát triển.</td><td>Có <code>HttpOnly</code>, <code>SameSite=Strict</code>; có <code>Secure</code> khi chạy qua HTTPS.</td><td>QT-20</td></tr>
+          <tr><td>TC-57</td><td>Giảm <code>SESSION_TTL_HOURS</code> xuống mức rất nhỏ khi test, chờ hết hạn rồi thao tác.</td><td>Quay về A1 kèm “Phiên đăng nhập đã hết hạn.”.</td><td>QT-20</td></tr>
+          <tr><td>TC-58</td><td>Khởi động server khi thiếu <code>ADMIN_PASSWORD</code> (rồi thiếu <code>SESSION_SECRET</code>, rồi mật khẩu 5 ký tự).</td><td>Server không khởi động, log nêu rõ biến nào thiếu hoặc quá yếu, không in giá trị.</td><td>QT-27</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Danh sách, tìm kiếm, xoá (CN-14, CN-15, CN-16)</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Tham chiếu</th></tr></thead>
+        <tbody>
+          <tr><td>TC-59</td><td>Vào A2 khi database trống.</td><td>“Chưa có người chơi nào.”</td><td>CN-14</td></tr>
+          <tr><td>TC-60</td><td>Tạo 25 người chơi, vào A2.</td><td>Trang 1 có 20 dòng, trang 2 có 5; người mới nhất ở đầu; tổng số hiển thị 25; ngày giờ theo giờ Việt Nam.</td><td>QT-21</td></tr>
+          <tr><td>TC-61</td><td>Tìm “văn” rồi “VĂN”.</td><td>Hai lần cùng kết quả (không phân biệt hoa thường), các dòng đều chứa chuỗi đó.</td><td>QT-22</td></tr>
+          <tr><td>TC-62</td><td>Tìm theo một phần email; theo số điện thoại gõ “0912 345” và “0912345”.</td><td>Ra đúng người; hai cách gõ số điện thoại cùng kết quả.</td><td>QT-22</td></tr>
+          <tr><td>TC-63</td><td>Tìm “nguyen” khi có người tên “Nguyễn”.</td><td>Không khớp (phân biệt dấu, G10).</td><td>G10</td></tr>
+          <tr><td>TC-64</td><td>Tìm “zzzz”, rồi xoá ô tìm kiếm.</td><td>Hiện “Không tìm thấy kết quả cho “zzzz”.”; xoá ô thì về danh sách đầy đủ.</td><td>CN-15</td></tr>
+          <tr><td>TC-65</td><td>Tìm “%” và “_”.</td><td>Chỉ khớp người có đúng ký tự đó, không khớp tất cả.</td><td>QT-22</td></tr>
+          <tr><td>TC-66</td><td>Bấm Xoá một dòng rồi bấm Huỷ.</td><td>Hộp xác nhận nêu đúng tên; Huỷ thì không xoá, danh sách y nguyên.</td><td>CN-16</td></tr>
+          <tr><td>TC-67</td><td>Bấm Xoá rồi xác nhận.</td><td>Dòng biến mất, tổng số giảm 1, bản ghi không còn trong database.</td><td>QT-23</td></tr>
+          <tr><td>TC-68</td><td>Ở trang 2 chỉ có 1 dòng, xoá dòng đó.</td><td>Tự về trang 1, không hiện trang trống.</td><td>CN-16</td></tr>
+          <tr><td>TC-69</td><td>Dùng <code>curl</code> với cookie hợp lệ xoá <code>id</code> không tồn tại.</td><td>404.</td><td>QT-23</td></tr>
+          <tr><td>TC-70</td><td>Xoá một người rồi đăng ký lại bằng đúng email đó.</td><td>Tạo bản ghi mới (<code>id</code> mới, <code>created_at</code> mới).</td><td>QT-23</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Xuất CSV (CN-17)</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Tham chiếu</th></tr></thead>
+        <tbody>
+          <tr><td>TC-71</td><td>Có 25 người, không tìm kiếm, bấm Xuất CSV.</td><td>Tải về file tên đúng mẫu <code>nguoi-choi-yyyyMMdd-HHmm.csv</code>, có hàng tiêu đề và 25 dòng (không bị cắt theo phân trang).</td><td>QT-24</td></tr>
+          <tr><td>TC-72</td><td>Tìm một chuỗi rồi bấm Xuất CSV.</td><td>File chỉ chứa các dòng khớp.</td><td>G11</td></tr>
+          <tr><td>TC-73</td><td>Mở file bằng Excel hoặc Numbers.</td><td>Tiếng Việt đúng dấu; số điện thoại giữ số 0 đầu; các cột đúng thứ tự.</td><td>QT-24</td></tr>
+          <tr><td>TC-74</td><td>Đăng ký người có họ tên chứa dấu phẩy, dấu nháy kép và xuống dòng, rồi xuất CSV và nhập lại vào bảng tính.</td><td>Dữ liệu vẫn đúng, không lệch cột.</td><td>QT-24</td></tr>
+          <tr><td>TC-75</td><td>Đăng ký người có họ tên <code>=HYPERLINK("http://example.com","x")</code> và một người tên <code>@SUM(1+1)</code>, xuất CSV, mở bằng Excel.</td><td>Hiện thành chữ, không chạy thành công thức.</td><td>QT-24</td></tr>
+          <tr><td>TC-76</td><td>Xuất CSV khi database trống.</td><td>File chỉ có hàng tiêu đề, không lỗi.</td><td>QT-24</td></tr>
+          <tr><td>TC-77</td><td>Gọi <code>GET /api/admin/players.csv</code> bằng <code>curl</code> khi không có cookie.</td><td>401, không có dữ liệu.</td><td>CN-13, CN-17</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Bảo mật và dữ liệu (QT-25, QT-26)</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Các bước</th><th>Kết quả mong đợi</th><th>Tham chiếu</th></tr></thead>
+        <tbody>
+          <tr><td>TC-78</td><td>Đăng ký người có họ tên <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> và <code>&lt;img src=x onerror=alert(1)&gt;</code>, vào A2.</td><td>Hiện nguyên văn như chữ, không có hộp thoại nào bật lên.</td><td>QT-25</td></tr>
+          <tr><td>TC-79</td><td>Đăng ký họ tên <code>'); DROP TABLE players;--</code>, rồi xem lại danh sách.</td><td>Lưu như chuỗi thường; bảng <code>players</code> và các bản ghi khác còn nguyên.</td><td>QT-25</td></tr>
+          <tr><td>TC-80</td><td>Dùng <code>curl</code> với cookie hợp lệ gửi <code>DELETE</code> kèm <code>Origin</code> lạ (ví dụ <code>http://evil.test</code>).</td><td>403, không xoá gì.</td><td>QT-25</td></tr>
+          <tr><td>TC-81</td><td>Đăng ký, tìm kiếm rồi đọc <code>docker compose logs app</code>.</td><td>Log không chứa họ tên, email, số điện thoại hay chuỗi tìm kiếm.</td><td>QT-25</td></tr>
+          <tr><td>TC-82</td><td>Đăng ký 3 người; chạy <code>docker compose restart app</code>, rồi <code>docker compose down</code> và <code>up</code>.</td><td>Cả hai lần dữ liệu còn nguyên. Chạy <code>down -v</code> thì dữ liệu mất (README phải cảnh báo điều này).</td><td>QT-26</td></tr>
+          <tr><td>TC-83</td><td>Kiểm tra <code>git ls-files</code>, nội dung ảnh Docker (<code>docker compose exec app ls -A /srv</code>) và <code>.gitignore</code>.</td><td>Không có file database, thư mục dữ liệu hay <code>.env</code> trong Git hoặc trong ảnh Docker.</td><td>QT-26</td></tr>
+          <tr><td>TC-84</td><td>Sau khi đăng ký thành công, chạy lại <strong>toàn bộ TC-01 đến TC-33</strong>.</td><td>Mọi ca cũ vẫn đạt (hồi quy), với điều kiện “mở trang, bấm Bắt đầu” hiểu là sau khi đã qua M4.</td><td>Hồi quy</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Tiêu chí hoàn thành (bổ sung)</h3>
+      <p>Tính năng mới xong khi <strong>tất cả</strong> mục sau đạt, các ca TC-34 đến TC-84 đều “Đạt”, và 9 mục tiêu chí cũ vẫn đạt.</p>
+      <ul class="check">
+        <li>Chưa đăng ký thì không vào chơi được; đăng ký hợp lệ thì vào M1 có dòng chào.</li>
+        <li>Họ tên, email, số điện thoại được kiểm tra đúng quy tắc ở cả trình duyệt và máy chủ; số điện thoại và email được chuẩn hoá.</li>
+        <li>Trùng email dùng lại đúng một hồ sơ, không tạo bản ghi trùng.</li>
+        <li>Dữ liệu còn sau khi khởi động lại container; file database và <code>.env</code> không lên Git, không vào ảnh Docker.</li>
+        <li>Trang admin cần đăng nhập; mọi API admin trả 401 khi chưa đăng nhập; sai thông tin chỉ có một thông báo chung; thử sai nhiều lần bị khoá.</li>
+        <li>Thiếu hoặc yếu cấu hình admin thì server không khởi động.</li>
+        <li>Xem danh sách có phân trang, tìm kiếm theo họ tên, email, số điện thoại, xoá có xác nhận.</li>
+        <li>CSV đúng tiếng Việt, giữ số 0 đầu, đúng bộ lọc, và chống chèn công thức.</li>
+        <li>Không có lỗ hổng XSS, SQL injection, CSRF theo các ca TC-78 đến TC-80; log không chứa dữ liệu cá nhân.</li>
+        <li>Giao diện M4 và khu vực admin dùng token của <code>design/tokens.css</code>; M4 dùng được từ 320 px; không có lỗi trong console.</li>
       </ul>
     </section>
 

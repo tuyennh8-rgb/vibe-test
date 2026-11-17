@@ -34,6 +34,7 @@
     <li><a href="#trang-thai">Dữ liệu trong lượt</a></li>
     <li><a href="#luu-tru">Dữ liệu lưu lâu dài</a></li>
     <li><a href="#bien">Trường hợp biên</a></li>
+    <li><a href="#mo-rong">Mở rộng: đăng ký &amp; admin</a></li>
   </ul></aside>
 
   <main>
@@ -143,6 +144,153 @@
           <tr><td>Máy chậm, khung hình bị trễ</td><td>Chuột vẫn biến mất đúng 800 ms theo mốc thời gian thực, không kéo dài.</td></tr>
         </tbody>
       </table></div>
+    </section>
+
+    <section id="mo-rong">
+      <h2>Mở rộng: đăng ký người chơi và trang admin</h2>
+      <div class="callout">
+        <p><strong>Phần bổ sung, không thay nội dung cũ.</strong> Các quy tắc QT-01 đến QT-12, các tham số và dữ liệu trong lượt ở trên giữ nguyên. Mục “Dữ liệu lưu lâu dài” ở trên nói chỉ có một giá trị trong <code>localStorage</code>; từ nay có thêm <strong>database SQLite ở máy chủ</strong> cho người chơi. <strong>Chưa viết code.</strong></p>
+      </div>
+
+      <div class="callout info">
+        <p><strong>Điều chỉnh khi triển khai (ghi chú bổ sung).</strong> Khi viết code, chủ dự án chọn <strong>PostgreSQL</strong> (dịch vụ <code>db</code> trong Docker Compose, dữ liệu trong volume <code>db-data</code>) thay cho SQLite ở Q6, và chọn khi trùng email thì <strong>dùng lại hồ sơ cũ và giữ nguyên họ tên, số điện thoại đã lưu</strong> (thay cho việc cập nhật ở Q8 và QT-18, và đồng thời giải quyết “Rủi ro đã biết” bên dưới). Các nội dung cũ trong phần này được giữ nguyên để đối chiếu; khi khác nhau, <strong>ghi chú này là bản mới nhất</strong>. Khác biệt nhỏ khác: biến cấu hình cho database là <code>POSTGRES_USER</code>, <code>POSTGRES_PASSWORD</code>, <code>POSTGRES_DB</code> thay cho <code>DB_PATH</code>; cột <code>id</code> là <code>BIGSERIAL</code>, thời gian là <code>TIMESTAMPTZ</code>.</p>
+      </div>
+
+      <h3>Cấu hình mới</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Tên</th><th>Giá trị</th><th>Ý nghĩa</th></tr></thead>
+        <tbody>
+          <tr><td><code>ADMIN_USER</code></td><td>bắt buộc</td><td>Tên đăng nhập admin, đặt trong <code>.env</code>.</td></tr>
+          <tr><td><code>ADMIN_PASSWORD</code></td><td>bắt buộc</td><td>Mật khẩu admin, đặt trong <code>.env</code>. Không viết vào mã, README hay Git.</td></tr>
+          <tr><td><code>SESSION_SECRET</code></td><td>bắt buộc, chuỗi ngẫu nhiên dài</td><td>Khoá ký cookie phiên admin.</td></tr>
+          <tr><td><code>DB_PATH</code></td><td><code>/data/players.db</code></td><td>Đường dẫn file SQLite trong container; thư mục <code>/data</code> là volume Docker.</td></tr>
+          <tr><td><code>SESSION_TTL_HOURS</code></td><td>8</td><td>Thời hạn phiên đăng nhập admin.</td></tr>
+          <tr><td><code>LOGIN_MAX_ATTEMPTS</code></td><td>5 lần / 15 phút / địa chỉ IP</td><td>Quá số lần thì tạm khoá đăng nhập.</td></tr>
+          <tr><td><code>REGISTER_MAX_PER_MINUTE</code></td><td>20 / địa chỉ IP</td><td>Chống gửi đăng ký hàng loạt.</td></tr>
+          <tr><td><code>PAGE_SIZE</code></td><td>20</td><td>Số dòng mỗi trang ở danh sách admin.</td></tr>
+          <tr><td><code>SEARCH_MAX_LENGTH</code></td><td>100</td><td>Độ dài tối đa chuỗi tìm kiếm.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Quy tắc đăng ký</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Quy tắc</th></tr></thead>
+        <tbody>
+          <tr><td>QT-13</td><td>Phải đăng ký thành công trước khi vào chơi. Sau đó Bắt đầu và Chơi lại không hỏi lại; thông tin không lưu ở trình duyệt, tải lại trang thì đăng ký lại (G8).</td></tr>
+          <tr><td>QT-14</td><td><strong>Họ tên:</strong> bỏ khoảng trắng đầu cuối, gộp nhiều khoảng trắng liên tiếp thành một; dài 2 đến 100 ký tự; phải có ít nhất một chữ cái (không chỉ toàn số hoặc ký hiệu).</td></tr>
+          <tr><td>QT-15</td><td><strong>Email:</strong> bỏ khoảng trắng đầu cuối; đúng định dạng <code>tên@miền.đuôi</code>; dài tối đa 254 ký tự; <strong>lưu và so khớp bằng chữ thường</strong>.</td></tr>
+          <tr><td>QT-16</td><td><strong>Số điện thoại:</strong> cho phép dấu cách, dấu chấm, dấu gạch ngang khi nhập; bỏ chúng đi; chấp nhận <code>0…</code>, <code>84…</code> hoặc <code>+84…</code>; sau chuẩn hoá phải là <strong>10 chữ số bắt đầu bằng 0</strong>, chữ số thứ hai là 3, 5, 7, 8 hoặc 9 (di động Việt Nam, G6). <strong>Lưu dạng <code>0912345678</code></strong>.</td></tr>
+          <tr><td>QT-17</td><td><strong>Đồng ý lưu thông tin:</strong> bắt buộc tick (G7). Máy chủ lưu thời điểm đồng ý.</td></tr>
+          <tr><td>QT-18</td><td><strong>Trùng email → dùng lại hồ sơ cũ</strong> (Q8): không tạo bản ghi mới; cập nhật họ tên, số điện thoại, <code>updated_at</code>; giữ nguyên <code>id</code> và <code>created_at</code>; trả về thành công như đăng ký mới. Xem “Rủi ro đã biết” bên dưới.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Mọi quy tắc trên <strong>do máy chủ kiểm tra lại</strong>; kiểm tra ở trình duyệt chỉ để báo lỗi nhanh.</p>
+
+      <h3>Bảng <code>players</code> (SQLite)</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Cột</th><th>Kiểu</th><th>Ràng buộc</th><th>Ý nghĩa</th></tr></thead>
+        <tbody>
+          <tr><td><code>id</code></td><td>số nguyên</td><td>khoá chính, tự tăng</td><td>Mã người chơi.</td></tr>
+          <tr><td><code>full_name</code></td><td>văn bản</td><td>bắt buộc, 2 đến 100 ký tự</td><td>Họ và tên đã chuẩn hoá.</td></tr>
+          <tr><td><code>email</code></td><td>văn bản</td><td>bắt buộc, <strong>duy nhất</strong>, chữ thường</td><td>Email, dùng để nhận ra người đã đăng ký.</td></tr>
+          <tr><td><code>phone</code></td><td>văn bản</td><td>bắt buộc, dạng <code>0xxxxxxxxx</code></td><td>Số điện thoại đã chuẩn hoá.</td></tr>
+          <tr><td><code>consent_at</code></td><td>văn bản (giờ UTC, ISO 8601)</td><td>bắt buộc</td><td>Lúc người chơi tick đồng ý (lần gần nhất).</td></tr>
+          <tr><td><code>created_at</code></td><td>văn bản (giờ UTC)</td><td>bắt buộc</td><td>Lần đăng ký đầu tiên.</td></tr>
+          <tr><td><code>updated_at</code></td><td>văn bản (giờ UTC)</td><td>bắt buộc</td><td>Lần đăng ký hoặc cập nhật gần nhất.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Mọi câu lệnh SQL dùng <strong>tham số hoá</strong>, không ghép chuỗi từ dữ liệu người dùng. Điểm số của lượt chơi <strong>không</strong> lưu vào database (G13).</p>
+
+      <h3>Giao diện lập trình (API)</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Yêu cầu</th><th>Ai dùng</th><th>Nội dung</th><th>Kết quả</th></tr></thead>
+        <tbody>
+          <tr><td><code>POST /api/players</code></td><td>Công khai</td><td>Họ tên, email, số điện thoại, đồng ý</td><td>201 tạo mới; 200 dùng lại hồ sơ cũ; 400 sai dữ liệu (kèm lỗi từng ô); 429 gửi quá nhanh; 500 lỗi máy chủ</td></tr>
+          <tr><td><code>POST /api/admin/login</code></td><td>Công khai</td><td>Tên đăng nhập, mật khẩu</td><td>200 và cookie phiên; 401 sai; 429 bị tạm khoá</td></tr>
+          <tr><td><code>POST /api/admin/logout</code></td><td>Admin</td><td>—</td><td>204 và xoá cookie</td></tr>
+          <tr><td><code>GET /api/admin/players?q=&amp;page=</code></td><td>Admin</td><td>Chuỗi tìm, số trang</td><td>200 danh sách một trang kèm tổng số; 401 chưa đăng nhập</td></tr>
+          <tr><td><code>DELETE /api/admin/players/:id</code></td><td>Admin</td><td>—</td><td>204 đã xoá; 404 không có; 401; 403 sai nguồn gốc yêu cầu</td></tr>
+          <tr><td><code>GET /api/admin/players.csv?q=</code></td><td>Admin</td><td>Chuỗi tìm (tuỳ chọn)</td><td>200 file CSV; 401</td></tr>
+        </tbody>
+      </table></div>
+      <p>Trang <code>/admin</code> là trang tĩnh có thể tải khi chưa đăng nhập; mọi dữ liệu người chơi chỉ đi qua các API <code>/api/admin/…</code> có kiểm tra phiên.</p>
+
+      <h3>Quy tắc admin</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Quy tắc</th></tr></thead>
+        <tbody>
+          <tr><td>QT-19</td><td>Đăng nhập: so sánh tên và mật khẩu với <code>ADMIN_USER</code> và <code>ADMIN_PASSWORD</code> bằng phép so sánh <strong>thời gian hằng định</strong>. Sai tên hay sai mật khẩu đều trả cùng một lỗi.</td></tr>
+          <tr><td>QT-20</td><td>Phiên: cookie ký bằng <code>SESSION_SECRET</code>, <strong>HttpOnly</strong>, <strong>SameSite=Strict</strong>, thêm <strong>Secure</strong> khi chạy qua HTTPS; hết hạn sau 8 giờ hoặc khi đăng xuất. Quá 5 lần sai trong 15 phút từ một địa chỉ IP thì trả 429 đến hết thời gian khoá.</td></tr>
+          <tr><td>QT-21</td><td>Danh sách: sắp xếp <code>created_at</code> giảm dần (mới nhất trước), 20 dòng mỗi trang; số trang ngoài phạm vi thì trả trang cuối. Ngày giờ hiển thị theo giờ Việt Nam (UTC+7), định dạng <code>dd/MM/yyyy HH:mm</code>.</td></tr>
+          <tr><td>QT-22</td><td>Tìm kiếm: cắt khoảng trắng đầu cuối, tối đa 100 ký tự; khớp khi <strong>họ tên, email hoặc số điện thoại chứa chuỗi</strong>, không phân biệt chữ hoa thường (dấu tiếng Việt phải khớp, G10); ký tự <code>%</code>, <code>_</code> được thoát để coi như ký tự thường; số điện thoại tìm được cả khi gõ có dấu cách (bỏ dấu cách, chấm, gạch trước khi so).</td></tr>
+          <tr><td>QT-23</td><td>Xoá: <strong>xoá hẳn</strong> một bản ghi theo <code>id</code>, không khôi phục (G12). Có xác nhận ở giao diện. Sau khi xoá, email đó đăng ký lại sẽ tạo bản ghi mới.</td></tr>
+          <tr><td>QT-24</td><td>CSV (G11): xuất theo <strong>bộ lọc tìm kiếm hiện tại</strong>, không có thì xuất tất cả; không phân trang. Mã hoá <strong>UTF-8 có BOM</strong>, ngăn cách bằng dấu phẩy, xuống dòng <code>CRLF</code>, ô có dấu phẩy, nháy kép hoặc xuống dòng được bao bằng nháy kép (nháy kép bên trong nhân đôi). Cột theo thứ tự: <code>ID</code>, <code>Họ và tên</code>, <code>Email</code>, <code>Số điện thoại</code>, <code>Ngày đăng ký</code>, <code>Cập nhật lần cuối</code> (hai cột ngày theo giờ Việt Nam, <code>yyyy-MM-dd HH:mm:ss</code>). Số điện thoại ghi dạng văn bản để Excel không bỏ số 0 đầu. <strong>Chống chèn công thức:</strong> ô văn bản bắt đầu bằng <code>=</code>, <code>+</code>, <code>-</code>, <code>@</code>, tab hoặc xuống dòng thì thêm dấu nháy đơn <code>'</code> phía trước. Tên file <code>nguoi-choi-yyyyMMdd-HHmm.csv</code>. Không có người nào thì file chỉ có hàng tiêu đề.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Bảo mật và lưu trữ</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Quy tắc</th></tr></thead>
+        <tbody>
+          <tr><td>QT-25</td><td><ul>
+            <li><strong>XSS:</strong> mọi dữ liệu người chơi hiển thị ở trang admin phải được thoát ký tự hoặc chèn dưới dạng văn bản, không chèn thẳng thành HTML.</li>
+            <li><strong>SQL:</strong> chỉ dùng câu lệnh tham số hoá.</li>
+            <li><strong>CSRF:</strong> yêu cầu <code>POST</code> và <code>DELETE</code> của admin phải có <code>Origin</code> trùng với địa chỉ của chính server, ngược lại trả 403; cộng với <code>SameSite=Strict</code>.</li>
+            <li><strong>Bộ nhớ đệm:</strong> trang và API admin trả <code>Cache-Control: no-store</code>.</li>
+            <li><strong>Nhật ký (log):</strong> không ghi email, số điện thoại, họ tên hay chuỗi tìm kiếm; khi ghi đường dẫn yêu cầu thì bỏ phần <code>?q=</code>.</li>
+            <li>Không để lộ chi tiết lỗi (đường dẫn file, câu lệnh SQL) cho trình duyệt.</li>
+          </ul></td></tr>
+          <tr><td>QT-26</td><td>File database nằm trong volume Docker <code>/data</code> nên còn lại sau <code>restart</code> và <code>down</code>; chỉ mất khi <code>docker compose down -v</code> hoặc xoá volume. File database, thư mục dữ liệu và <code>.env</code> <strong>không đưa lên Git và không nằm trong ảnh Docker</strong>.</td></tr>
+          <tr><td>QT-27</td><td>Thiếu <code>ADMIN_USER</code>, <code>ADMIN_PASSWORD</code> hoặc <code>SESSION_SECRET</code>, hoặc mật khẩu quá ngắn (dưới 10 ký tự), thì server <strong>từ chối khởi động</strong> và in ra lý do (không in giá trị) (G14).</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Dữ liệu cá nhân</h3>
+      <ul>
+        <li>Họ tên, email, số điện thoại là <strong>dữ liệu cá nhân</strong>. Chỉ thu khi người chơi đã tick đồng ý, chỉ admin xem được, không chia sẻ cho bên thứ ba.</li>
+        <li>Admin xoá được bất cứ bản ghi nào; người chơi muốn xoá dữ liệu của mình thì liên hệ admin.</li>
+        <li>Nội dung chữ ở hộp đồng ý nên nêu rõ mục đích lưu thông tin. Nội dung chính thức do chủ dự án quyết định.</li>
+        <li>Email và số điện thoại <strong>không được xác minh</strong> (không gửi mã xác nhận): người nhập có thể nhập thông tin của người khác.</li>
+      </ul>
+
+      <h3>Trường hợp biên</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Tình huống</th><th>Xử lý</th></tr></thead>
+        <tbody>
+          <tr><td>Hai yêu cầu đăng ký cùng email gửi gần như cùng lúc</td><td>Ràng buộc duy nhất của <code>email</code> đảm bảo chỉ một bản ghi; yêu cầu sau coi như “dùng lại hồ sơ” và vẫn thành công.</td></tr>
+          <tr><td>Email viết hoa, có khoảng trắng thừa</td><td>Cắt khoảng trắng, đổi chữ thường trước khi lưu và so khớp.</td></tr>
+          <tr><td>Họ tên có dấu tiếng Việt, ký tự đặc biệt, hoặc mã HTML</td><td>Lưu và hiển thị nguyên văn, không chạy như mã.</td></tr>
+          <tr><td>Database bị khoá hoặc lỗi</td><td>Trả 500, người chơi thấy thông báo chung; không vào chơi.</td></tr>
+          <tr><td>Không gọi được máy chủ (ví dụ trang tĩnh trên GitHub Pages)</td><td>Báo lỗi ở M4, không cho vào chơi (G9).</td></tr>
+          <tr><td>Xoá người đang có phiên chơi</td><td>Lượt đang chơi không bị ảnh hưởng (điểm không lưu ở máy chủ).</td></tr>
+          <tr><td>Hai admin dùng cùng tài khoản</td><td>Cả hai đều đăng nhập được; mỗi phiên độc lập.</td></tr>
+          <tr><td>Đổi <code>ADMIN_PASSWORD</code> hoặc <code>SESSION_SECRET</code></td><td>Phải khởi động lại server; phiên cũ bị coi là không hợp lệ khi đổi <code>SESSION_SECRET</code>.</td></tr>
+          <tr><td>Trang admin mở trong nhiều tab, một tab đăng xuất</td><td>Tab còn lại gặp 401 ở lần gọi kế tiếp và quay về A1.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Giả định cần xác nhận</h3>
+      <p>Những điểm bạn chưa nói rõ; tôi chọn cách đơn giản và an toàn nhất, ghi ra để bạn sửa. Mã G6 trở đi tiếp nối G1 đến G5 ở tài liệu 01.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Giả định</th><th>Ảnh hưởng</th></tr></thead>
+        <tbody>
+          <tr><td>G6</td><td>Chỉ nhận <strong>số điện thoại di động Việt Nam</strong> (10 số, đầu 03, 05, 07, 08, 09; hoặc <code>+84</code>, <code>84</code>).</td><td>Người nước ngoài hoặc số bàn không đăng ký được.</td></tr>
+          <tr><td>G7</td><td>Thêm <strong>hộp tick đồng ý</strong> lưu thông tin (bắt buộc). Đây là phần tôi thêm vì dữ liệu cá nhân, không có trong yêu cầu ban đầu.</td><td>Thêm một ô ở M4; có cột <code>consent_at</code>.</td></tr>
+          <tr><td>G8</td><td>Đăng ký <strong>một lần mỗi lần mở trang</strong>; không nhớ trong trình duyệt.</td><td>Tải lại trang là nhập lại.</td></tr>
+          <tr><td>G9</td><td>Không gọi được máy chủ thì <strong>không cho chơi</strong>.</td><td>Bản GitHub Pages tĩnh không chơi được sau khi có tính năng này.</td></tr>
+          <tr><td>G10</td><td>Tìm kiếm không phân biệt hoa thường nhưng <strong>phân biệt dấu</strong> tiếng Việt.</td><td>Gõ “nguyen” không ra “Nguyễn”.</td></tr>
+          <tr><td>G11</td><td>CSV xuất theo <strong>bộ lọc tìm kiếm hiện tại</strong>.</td><td>Muốn xuất tất cả thì xoá ô tìm kiếm trước.</td></tr>
+          <tr><td>G12</td><td>Xoá <strong>từng người</strong>, xoá hẳn; không có chọn nhiều, không có thùng rác.</td><td>Xoá nhầm là mất.</td></tr>
+          <tr><td>G13</td><td><strong>Điểm số không lưu</strong> vào database; chỉ lưu thông tin đăng ký.</td><td>Admin không xem được điểm từng người.</td></tr>
+          <tr><td>G14</td><td>Thiếu cấu hình admin thì server <strong>không khởi động</strong>.</td><td>Phải tạo <code>.env</code> trước khi chạy Docker.</td></tr>
+          <tr><td>G15</td><td>20 dòng mỗi trang; giới hạn đăng ký 20 lần mỗi phút mỗi IP; đăng nhập sai 5 lần thì khoá 15 phút.</td><td>Có thể chỉnh trong cấu hình.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Rủi ro đã biết</h3>
+      <div class="callout">
+        <p><strong>Ghi đè thông tin người khác.</strong> Vì email không được xác minh và Q8 chọn “dùng lại hồ sơ, cập nhật họ tên và số điện thoại”, bất kỳ ai nhập email của người khác sẽ <strong>ghi đè họ tên và số điện thoại</strong> của người đó trong database. Cách giảm rủi ro nếu bạn muốn: khi trùng email thì <strong>giữ nguyên</strong> họ tên và số điện thoại đã lưu, chỉ cho chơi tiếp (không cập nhật). Tài liệu hiện ghi đúng theo Q8; bạn quyết định có đổi không.</p>
+      </div>
     </section>
 
     <nav class="pager" aria-label="Điều hướng"><a href="03-man-hinh.html">← 03 Màn hình</a><a href="05-ke-hoach-test.html">05 Kế hoạch test →</a></nav>

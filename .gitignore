@@ -5,8 +5,11 @@
 node_modules/
 npm-debug.log*
 
-# Log và biến môi trường (có thể chứa bí mật)
-*.log
+# Bí mật: .env chứa mật khẩu database và admin, KHÔNG đưa lên Git.
+# Chỉ file mẫu .env.example (không có mật khẩu thật) được phép commit.
 .env
 .env.*
 !.env.example
+
+# Log
+*.log

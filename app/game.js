@@ -24,7 +24,7 @@
 
   /* ---------- Phần tử giao diện ---------- */
   const $ = (id) => document.getElementById(id);
-  const screens = { start: $('screen-start'), play: $('screen-play'), over: $('screen-over') };
+  const screens = { register: $('screen-register'), start: $('screen-start'), play: $('screen-play'), over: $('screen-over') };
   const els = {
     btnStart: $('btn-start'),
     btnAgain: $('btn-again'),
@@ -244,8 +244,126 @@
     render();
   }
 
+  /* ---------- Đăng ký người chơi trước khi chơi (CN-10, CN-11, CN-12, M4) ----------
+     Kiểm tra ở trình duyệt chỉ để báo lỗi nhanh; máy chủ luôn kiểm tra lại. */
+  const REGISTER_MESSAGES = Object.freeze({
+    fullName: 'Vui lòng nhập họ và tên (2 đến 100 ký tự).',
+    email: 'Email không hợp lệ.',
+    phone: 'Số điện thoại không hợp lệ. Ví dụ: 0912 345 678.',
+    consent: 'Bạn cần đồng ý để tiếp tục.',
+    server: 'Không thể đăng ký lúc này. Vui lòng thử lại.',
+    rateLimited: 'Bạn thao tác quá nhanh. Vui lòng đợi một chút rồi thử lại.'
+  });
+  const FIELD_ORDER = ['fullName', 'email', 'phone', 'consent'];
+  const EMAIL_RE = /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,63}$/;
+  const registerForm = $('register-form');
+  const registerButton = $('btn-register');
+  const formError = $('form-error');
+  let registering = false;
+
+  const fieldInput = (name) => $(`f-${name}`);
+  const fieldError = (name) => $(`e-${name}`);
+
+  function setFieldError(name, message) {
+    const input = fieldInput(name);
+    const holder = fieldError(name);
+    holder.textContent = message || '';
+    holder.hidden = !message;
+    input.setAttribute('aria-invalid', message ? 'true' : 'false');
+  }
+
+  function setFormError(message) {
+    formError.textContent = message || '';
+    formError.hidden = !message;
+  }
+
+  function readRegisterForm() {
+    return {
+      fullName: fieldInput('fullName').value.normalize('NFC').replace(/\s+/g, ' ').trim(),
+      email: fieldInput('email').value.trim().toLowerCase(),
+      phone: fieldInput('phone').value.trim(),
+      consent: fieldInput('consent').checked
+    };
+  }
+
+  function validateRegister(values) {
+    const errors = {};
+    const nameLength = [...values.fullName].length;
+    if (nameLength < 2 || nameLength > 100 || !/\p{L}/u.test(values.fullName)) errors.fullName = REGISTER_MESSAGES.fullName;
+    const local = values.email.slice(0, values.email.lastIndexOf('@'));
+    if (values.email.length > 254 || !EMAIL_RE.test(values.email) || local.length > 64 ||
+        local.startsWith('.') || local.endsWith('.') || local.includes('..')) {
+      errors.email = REGISTER_MESSAGES.email;
+    }
+    let phone = values.phone.replace(/[\s.\-]/g, '');
+    if (phone.startsWith('+84')) phone = `0${phone.slice(3)}`;
+    else if (phone.startsWith('84')) phone = `0${phone.slice(2)}`;
+    if (!/^0[35789]\d{8}$/.test(phone)) errors.phone = REGISTER_MESSAGES.phone;
+    if (!values.consent) errors.consent = REGISTER_MESSAGES.consent;
+    return errors;
+  }
+
+  function showRegisterErrors(errors) {
+    FIELD_ORDER.forEach((name) => setFieldError(name, errors[name]));
+    const first = FIELD_ORDER.find((name) => errors[name]);
+    if (first) fieldInput(first).focus();
+    return Boolean(first);
+  }
+
+  function validateOneField(name) {
+    const errors = validateRegister(readRegisterForm());
+    setFieldError(name, errors[name]);
+  }
+
+  async function onRegisterSubmit(event) {
+    event.preventDefault();
+    if (registering) return;                         // chống bấm đúp: chỉ gửi một lần
+    setFormError('');
+    const values = readRegisterForm();
+    if (showRegisterErrors(validateRegister(values))) return;
+
+    registering = true;
+    registerButton.disabled = true;
+    registerButton.textContent = 'Đang gửi…';
+    try {
+      const response = await fetch('/api/players', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values)
+      });
+      if (response.ok) {
+        const greeting = $('greeting');
+        greeting.textContent = `Xin chào, ${values.fullName}`;
+        greeting.hidden = false;
+        showScreen('start', true);
+      } else if (response.status === 400) {
+        const data = await response.json().catch(() => null);
+        const fields = data && data.error && data.error.fields;
+        if (!fields || !showRegisterErrors(fields)) setFormError(REGISTER_MESSAGES.server);
+      } else if (response.status === 429) {
+        setFormError(REGISTER_MESSAGES.rateLimited);
+      } else {
+        setFormError(REGISTER_MESSAGES.server);      // gồm cả trang tĩnh không có máy chủ (G9): không cho vào chơi
+      }
+    } catch (_) {
+      setFormError(REGISTER_MESSAGES.server);
+    } finally {
+      registering = false;
+      registerButton.disabled = false;
+      registerButton.textContent = 'Tiếp tục';
+    }
+  }
+
   /* ---------- Khởi tạo ---------- */
   function init() {
+    registerForm.addEventListener('submit', onRegisterSubmit);
+    FIELD_ORDER.forEach((name) => {
+      fieldInput(name).addEventListener('blur', () => {
+        const input = fieldInput(name);
+        // Chỉ báo lỗi khi người dùng đã nhập gì đó hoặc đã từng báo lỗi, tránh hiện lỗi ngay khi mới lướt qua ô.
+        if ((input.type === 'checkbox' ? false : input.value !== '') || input.getAttribute('aria-invalid') === 'true') validateOneField(name);
+      });
+    });
     els.bestStart.textContent = String(loadBest());
     els.btnStart.addEventListener('click', startGame);
     els.btnAgain.addEventListener('click', startGame);
@@ -261,7 +379,7 @@
         if (advance(performance.now())) render();
       }
     });
-    showScreen('start', false);
+    showScreen('register', false);                  // phải đăng ký xong mới sang màn hình bắt đầu (QT-13)
   }
 
   init();

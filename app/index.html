@@ -10,9 +10,41 @@
 <body>
 <main class="app">
 
+  <!-- M4 · Màn hình đăng ký (hiện đầu tiên) -->
+  <section id="screen-register" class="screen" aria-labelledby="register-title">
+    <h1 id="register-title" class="title title-sm" tabindex="-1">Đăng ký <span>chơi</span></h1>
+    <form id="register-form" class="form" novalidate>
+      <div class="field">
+        <label for="f-fullName">Họ và tên</label>
+        <input id="f-fullName" class="input" name="fullName" type="text" autocomplete="name" maxlength="100" placeholder="Nguyễn Văn A" aria-describedby="e-fullName" required>
+        <p id="e-fullName" class="field-error" hidden></p>
+      </div>
+      <div class="field">
+        <label for="f-email">Email</label>
+        <input id="f-email" class="input" name="email" type="email" inputmode="email" autocomplete="email" maxlength="254" placeholder="ban@congty.vn" aria-describedby="e-email" required>
+        <p id="e-email" class="field-error" hidden></p>
+      </div>
+      <div class="field">
+        <label for="f-phone">Số điện thoại</label>
+        <input id="f-phone" class="input" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="0912 345 678" aria-describedby="e-phone" required>
+        <p id="e-phone" class="field-error" hidden></p>
+      </div>
+      <div class="field">
+        <label class="check" for="f-consent">
+          <input id="f-consent" name="consent" type="checkbox" aria-describedby="e-consent">
+          <span>Tôi đồng ý cho lưu thông tin này để liên hệ.</span>
+        </label>
+        <p id="e-consent" class="field-error" hidden></p>
+      </div>
+      <p id="form-error" class="form-error" role="alert" hidden></p>
+      <button id="btn-register" class="btn btn-primary btn-lg" type="submit">Tiếp tục</button>
+    </form>
+  </section>
+
   <!-- M1 · Màn hình bắt đầu -->
-  <section id="screen-start" class="screen" aria-labelledby="start-title">
+  <section id="screen-start" class="screen" aria-labelledby="start-title" hidden>
     <h1 id="start-title" class="title" tabindex="-1">Đập <span>chuột</span></h1>
+    <p id="greeting" class="hint" hidden></p>
     <p class="hint">Đập chuột trong 30 giây.<br>Trúng +1 điểm, trượt −1 điểm.</p>
     <p class="best">Kỷ lục: <b id="best-start">0</b></p>
     <button id="btn-start" class="btn btn-primary btn-lg" type="button">Bắt đầu</button>

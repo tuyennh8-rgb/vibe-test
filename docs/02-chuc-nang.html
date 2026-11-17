@@ -32,6 +32,7 @@
     <li><a href="#tong-hop">Bảng tổng hợp</a></li>
     <li><a href="#chi-tiet">Chi tiết từng chức năng</a></li>
     <li><a href="#ngoai">Ngoài phạm vi</a></li>
+    <li><a href="#mo-rong">Mở rộng: đăng ký &amp; admin</a></li>
   </ul></aside>
 
   <main>
@@ -131,6 +132,149 @@
     <section id="ngoai">
       <h2>Ngoài phạm vi</h2>
       <p>Tạm dừng, âm thanh, nhiều mức khó, chuột tăng tốc, bảng xếp hạng online, nhiều người chơi, đăng nhập. Nếu muốn thêm, hãy bổ sung vào tài liệu này trước khi làm.</p>
+    </section>
+
+    <section id="mo-rong">
+      <h2>Mở rộng: đăng ký người chơi và trang admin</h2>
+      <div class="callout">
+        <p><strong>Phần bổ sung, không thay nội dung cũ.</strong> Các chức năng CN-01 đến CN-09 giữ nguyên. Mục “Ngoài phạm vi” ở trên (đăng nhập, dữ liệu cá nhân) được thay bằng phần mở rộng này cho riêng CN-10 đến CN-17. <strong>Chưa viết code.</strong></p>
+      </div>
+
+      <div class="callout info">
+        <p><strong>Điều chỉnh khi triển khai.</strong> Database là <strong>PostgreSQL</strong> (thay cho SQLite ở Q6) và khi trùng email thì <strong>dùng lại hồ sơ cũ, giữ nguyên thông tin đã lưu</strong> (thay cho “cập nhật” ở CN-11). Chi tiết ở ghi chú đầu mục “Mở rộng” của tài liệu 04. Nội dung cũ bên dưới được giữ nguyên để đối chiếu.</p>
+      </div>
+
+      <h3>Yêu cầu</h3>
+      <p>Người chơi nhập <strong>họ tên, email, số điện thoại</strong> trước khi chơi. Dữ liệu lưu vào database. Có <strong>trang admin</strong> phải đăng nhập để <strong>xem, tìm kiếm, xoá và xuất danh sách ra file CSV</strong>.</p>
+
+      <h3>Quyết định đã chốt (phỏng vấn lần 2)</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Câu hỏi</th><th>Quyết định</th></tr></thead>
+        <tbody>
+          <tr><td>Q6</td><td>Loại database?</td><td><strong>SQLite</strong>: một file database trong volume Docker, không thêm dịch vụ mới.</td></tr>
+          <tr><td>Q7</td><td>Admin đăng nhập bằng gì?</td><td><strong>1 tài khoản</strong> lấy từ biến môi trường (<code>.env</code>), không có màn hình quản lý admin.</td></tr>
+          <tr><td>Q8</td><td>Đăng ký lại bằng email đã có?</td><td><strong>Dùng lại hồ sơ cũ</strong>: mỗi email chỉ một hồ sơ, không tạo bản ghi trùng.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Luồng chơi mới</h3>
+      <div class="flow">
+        <div class="node active"><b>0. Đăng ký</b>Nhập họ tên, email, số điện thoại.</div>
+        <div class="arrow">→</div>
+        <div class="node"><b>1. Chờ</b>Màn hình bắt đầu (M1).</div>
+        <div class="arrow">→</div>
+        <div class="node"><b>2. Đang chơi</b>30 giây, như cũ.</div>
+        <div class="arrow">→</div>
+        <div class="node"><b>3. Kết thúc</b>Như cũ; Chơi lại không phải đăng ký lại.</div>
+      </div>
+      <p>Trạng thái “Đăng ký” đứng <strong>trước</strong> trạng thái “Chờ”. Ba trạng thái cũ (Chờ, Đang chơi, Kết thúc) và các quy tắc chơi không thay đổi. Trang admin là một khu vực riêng tại <code>/admin</code>, không nằm trong luồng chơi.</p>
+
+      <h3>Bảng tổng hợp</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Mã</th><th>Chức năng</th><th>Màn hình</th><th>Quy tắc</th></tr></thead>
+        <tbody>
+          <tr><td>CN-10</td><td>Form đăng ký trước khi chơi</td><td>M4</td><td>QT-13 đến QT-17</td></tr>
+          <tr><td>CN-11</td><td>Lưu người chơi vào database (dùng lại hồ sơ khi trùng email)</td><td>M4</td><td>QT-18, QT-26</td></tr>
+          <tr><td>CN-12</td><td>Vào chơi sau khi đăng ký; Chơi lại không nhập lại</td><td>M4, M1, M3</td><td>QT-13</td></tr>
+          <tr><td>CN-13</td><td>Đăng nhập và đăng xuất admin</td><td>A1, A2</td><td>QT-19, QT-20, QT-27</td></tr>
+          <tr><td>CN-14</td><td>Xem danh sách người chơi</td><td>A2</td><td>QT-21</td></tr>
+          <tr><td>CN-15</td><td>Tìm kiếm người chơi</td><td>A2</td><td>QT-22</td></tr>
+          <tr><td>CN-16</td><td>Xoá người chơi</td><td>A2, A3</td><td>QT-23</td></tr>
+          <tr><td>CN-17</td><td>Xuất danh sách ra CSV</td><td>A2</td><td>QT-24</td></tr>
+        </tbody>
+      </table></div>
+      <p>Quy tắc bảo mật chung cho mọi chức năng mới nằm ở QT-25 (tài liệu 04).</p>
+
+      <h3>Chi tiết từng chức năng</h3>
+
+      <article class="fn"><header><span class="tag">CN-10</span><h3>Form đăng ký trước khi chơi</h3></header>
+        <dl>
+          <dt>Mô tả</dt><dd>Khi mở trang, người chơi thấy màn hình đăng ký (M4): nhập <strong>Họ và tên</strong>, <strong>Email</strong>, <strong>Số điện thoại</strong>, tick đồng ý lưu thông tin, rồi bấm <strong>Tiếp tục</strong>.</dd>
+          <dt>Kích hoạt</dt><dd>Mở trang game, hoặc tải lại trang.</dd>
+          <dt>Kết quả</dt><dd>Dữ liệu hợp lệ được gửi lên máy chủ; đăng ký thành công thì chuyển sang màn hình bắt đầu (M1).</dd>
+          <dt>Chấp nhận</dt><dd><ul>
+            <li>Không có đường nào vào màn hình chơi nếu chưa đăng ký thành công.</li>
+            <li>Lỗi hiện ngay dưới từng ô sai, không xoá những gì người chơi đã nhập.</li>
+            <li>Đang gửi thì nút Tiếp tục bị khoá, bấm nhiều lần chỉ gửi một lần.</li>
+            <li>Máy chủ kiểm tra lại toàn bộ dữ liệu; không tin kiểm tra ở trình duyệt.</li>
+          </ul></dd>
+        </dl></article>
+
+      <article class="fn"><header><span class="tag">CN-11</span><h3>Lưu người chơi vào database</h3></header>
+        <dl>
+          <dt>Mô tả</dt><dd>Máy chủ chuẩn hoá dữ liệu rồi lưu vào SQLite. Nếu <strong>email đã có</strong> thì dùng lại hồ sơ cũ: cập nhật họ tên, số điện thoại và thời điểm cập nhật, giữ nguyên ngày tạo; không tạo bản ghi mới.</dd>
+          <dt>Kết quả</dt><dd>Trả về thành công cho trình duyệt; người chơi vào M1.</dd>
+          <dt>Chấp nhận</dt><dd><ul>
+            <li>Cùng một email (khác chữ hoa/thường) chỉ có một bản ghi.</li>
+            <li>Dữ liệu còn sau khi khởi động lại container.</li>
+            <li>Lỗi database hiện thông báo chung, không lộ chi tiết kỹ thuật.</li>
+          </ul></dd>
+        </dl></article>
+
+      <article class="fn"><header><span class="tag">CN-12</span><h3>Vào chơi và Chơi lại</h3></header>
+        <dl>
+          <dt>Mô tả</dt><dd>Sau đăng ký, màn hình bắt đầu (M1) chào tên người chơi. Bắt đầu và Chơi lại hoạt động như cũ (CN-01, CN-07) và <strong>không</strong> hỏi lại thông tin.</dd>
+          <dt>Chấp nhận</dt><dd><ul>
+            <li>Chơi nhiều lượt liên tiếp không phải nhập lại.</li>
+            <li>Tải lại trang thì quay về M4; thông tin không được lưu lại trong trình duyệt (G8).</li>
+          </ul></dd>
+        </dl></article>
+
+      <article class="fn"><header><span class="tag">CN-13</span><h3>Đăng nhập và đăng xuất admin</h3></header>
+        <dl>
+          <dt>Mô tả</dt><dd>Trang <code>/admin</code> yêu cầu tên đăng nhập và mật khẩu. Chỉ có <strong>một tài khoản</strong>, đặt bằng biến môi trường. Đăng nhập đúng thì vào danh sách; có nút Đăng xuất.</dd>
+          <dt>Kết quả</dt><dd>Phiên đăng nhập có thời hạn; hết hạn hoặc đăng xuất thì phải đăng nhập lại.</dd>
+          <dt>Chấp nhận</dt><dd><ul>
+            <li>Chưa đăng nhập thì không xem được danh sách và mọi thao tác admin bị từ chối (401).</li>
+            <li>Sai tên hoặc sai mật khẩu đều hiện cùng một thông báo.</li>
+            <li>Thử sai quá nhiều lần thì bị tạm khoá.</li>
+            <li>Thiếu cấu hình tài khoản admin thì server không khởi động (QT-27).</li>
+          </ul></dd>
+        </dl></article>
+
+      <article class="fn"><header><span class="tag">CN-14</span><h3>Xem danh sách người chơi</h3></header>
+        <dl>
+          <dt>Mô tả</dt><dd>Bảng gồm Họ và tên, Email, Số điện thoại, Ngày đăng ký, sắp xếp người mới nhất lên đầu, chia trang.</dd>
+          <dt>Chấp nhận</dt><dd><ul>
+            <li>Hiện tổng số người chơi và trang hiện tại.</li>
+            <li>Danh sách trống thì có thông báo rõ ràng.</li>
+          </ul></dd>
+        </dl></article>
+
+      <article class="fn"><header><span class="tag">CN-15</span><h3>Tìm kiếm người chơi</h3></header>
+        <dl>
+          <dt>Mô tả</dt><dd>Một ô tìm kiếm, lọc theo họ tên, email hoặc số điện thoại chứa chuỗi đã nhập.</dd>
+          <dt>Chấp nhận</dt><dd><ul>
+            <li>Không phân biệt chữ hoa, chữ thường.</li>
+            <li>Ký tự đặc biệt như <code>%</code> và <code>_</code> được coi là ký tự thường.</li>
+            <li>Không có kết quả thì có thông báo; xoá ô tìm kiếm thì trở về danh sách đầy đủ.</li>
+          </ul></dd>
+        </dl></article>
+
+      <article class="fn"><header><span class="tag">CN-16</span><h3>Xoá người chơi</h3></header>
+        <dl>
+          <dt>Mô tả</dt><dd>Mỗi dòng có nút Xoá. Bấm Xoá hiện hộp xác nhận (A3) nêu tên người chơi; xác nhận thì <strong>xoá hẳn</strong>, không khôi phục được.</dd>
+          <dt>Chấp nhận</dt><dd><ul>
+            <li>Bấm Huỷ thì không xoá gì.</li>
+            <li>Xoá xong, dòng biến mất và tổng số giảm 1.</li>
+            <li>Người đã bị xoá đăng ký lại bằng cùng email thì tạo hồ sơ mới.</li>
+          </ul></dd>
+        </dl></article>
+
+      <article class="fn"><header><span class="tag">CN-17</span><h3>Xuất danh sách ra CSV</h3></header>
+        <dl>
+          <dt>Mô tả</dt><dd>Nút <strong>Xuất CSV</strong> tải về file CSV của danh sách <strong>đang lọc</strong> (không tìm kiếm thì xuất tất cả).</dd>
+          <dt>Chấp nhận</dt><dd><ul>
+            <li>Mở bằng Excel hiển thị đúng tiếng Việt có dấu và giữ số 0 đầu của số điện thoại.</li>
+            <li>Ô có thể bị Excel hiểu là công thức được vô hiệu hoá (QT-24).</li>
+            <li>Chỉ admin đã đăng nhập mới tải được.</li>
+          </ul></dd>
+        </dl></article>
+
+      <h3>Ràng buộc triển khai</h3>
+      <div class="callout info">
+        <p>Đăng ký và trang admin cần <strong>một máy chủ có database</strong>, nên chỉ chạy được khi chạy bằng Docker (hoặc máy chủ Node.js). Bản <strong>GitHub Pages</strong> là trang tĩnh, không có máy chủ: ở đó <strong>không đăng ký được, nên không vào chơi được</strong> (G9). Muốn người khác chơi bản có đăng ký thì phải chạy bản Docker trên một máy chủ hoặc tunnel.</p>
+      </div>
     </section>
 
     <nav class="pager" aria-label="Điều hướng"><a href="01-tong-quan.html">← 01 Tổng quan</a><a href="03-man-hinh.html">03 Màn hình →</a></nav>
